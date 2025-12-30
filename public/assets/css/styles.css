@@ -1,0 +1,148 @@
+/* 
+ * SB Admin Pro Styles
+ * Placeholder - Coloca aquí los estilos de la plantilla SB Admin Pro
+ * O copia el archivo styles.css de la plantilla a esta ubicación
+ */
+
+/* Basic Layout Styles */
+body {
+  font-family: "Metropolis", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.topnav {
+  height: 56px;
+}
+
+.nav-fixed .topnav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+}
+
+.nav-fixed #layoutSidenav {
+  padding-top: 56px;
+}
+
+#layoutSidenav {
+  display: flex;
+  min-height: 100vh;
+}
+
+#layoutSidenav_nav {
+  flex-basis: 225px;
+  flex-shrink: 0;
+  transition: transform 0.15s ease-in-out;
+  z-index: 1025;
+  transform: translateX(0);
+}
+
+.nav-fixed #layoutSidenav #layoutSidenav_nav {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  bottom: 0;
+  width: 225px;
+  overflow-y: auto;
+}
+
+#layoutSidenav_content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+  flex-grow: 1;
+  min-height: calc(100vh - 56px);
+  margin-left: 225px;
+}
+
+.sidenav {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex-wrap: nowrap;
+}
+
+/* Sidebar Toggle */
+body.sidenav-toggled #layoutSidenav_nav {
+  transform: translateX(-225px);
+}
+
+body.sidenav-toggled #layoutSidenav_content {
+  margin-left: 0;
+}
+
+/* Page Header Styles */
+.page-header {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.page-header-dark {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.bg-gradient-primary-to-secondary {
+  background: linear-gradient(135deg, #0061f2 0%, #6900c7 100%);
+}
+
+/* Footer */
+.footer-admin {
+  padding: 1.5rem 0;
+}
+
+.footer-light {
+  background-color: white;
+  color: #69707a;
+}
+
+/* Card Styles */
+.card {
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15);
+  border: none;
+  border-radius: 0.35rem;
+}
+
+.card-header {
+  font-weight: 500;
+  padding: 1rem 1.35rem;
+  background-color: white;
+  border-bottom: 1px solid rgba(33, 40, 50, 0.125);
+}
+
+/* Utilities */
+.text-xs { font-size: 0.7rem; }
+.text-sm { font-size: 0.875rem; }
+.text-lg { font-size: 1.25rem; }
+.text-xl { font-size: 1.5rem; }
+
+.fw-500 { font-weight: 500; }
+.fw-600 { font-weight: 600; }
+.fw-700 { font-weight: 700; }
+
+/* Navigation */
+.nav-link-icon {
+  width: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+  #layoutSidenav_content {
+    margin-left: 0;
+  }
+  
+  #layoutSidenav_nav {
+    transform: translateX(-225px);
+  }
+  
+  body.sidenav-toggled #layoutSidenav_nav {
+    transform: translateX(0);
+  }
+}

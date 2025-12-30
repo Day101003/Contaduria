@@ -1,0 +1,9 @@
+<!-- Placeholder SVG for 404 Error -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect fill="#f8f9fa" width="800" height="600"/>
+  <text x="400" y="250" font-family="Arial, sans-serif" font-size="120" font-weight="bold" text-anchor="middle" fill="#6c757d">404</text>
+  <text x="400" y="320" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#adb5bd">Página no encontrada</text>
+  <circle cx="250" cy="450" r="40" fill="#e9ecef" opacity="0.5"/>
+  <circle cx="550" cy="470" r="30" fill="#e9ecef" opacity="0.5"/>
+  <circle cx="400" cy="480" r="20" fill="#e9ecef" opacity="0.5"/>
+</svg>
