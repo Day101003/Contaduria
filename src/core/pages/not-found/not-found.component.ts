@@ -1,5 +1,5 @@
 import { Component, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -12,12 +12,15 @@ import { RouterModule } from '@angular/router';
 export class NotFoundComponent implements AfterViewInit {
   currentYear: number = new Date().getFullYear();
   
-  constructor() {}
+  constructor(private location: Location) {}
 
   ngAfterViewInit(): void {
-    // Initialize Feather Icons
     if ((globalThis as any).feather) {
       (globalThis as any).feather.replace();
     }
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 }

@@ -20,7 +20,6 @@ export class AdminLayoutComponent implements AfterViewInit {
   constructor() {}
 
   ngAfterViewInit(): void {
-    // Initialize Feather Icons
     if ((globalThis as any).feather) {
       (globalThis as any).feather.replace();
     }

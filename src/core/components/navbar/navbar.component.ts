@@ -18,7 +18,6 @@ export class NavbarComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Initialize Feather Icons with a small delay
     setTimeout(() => {
       if ((globalThis as any).feather) {
         (globalThis as any).feather.replace();

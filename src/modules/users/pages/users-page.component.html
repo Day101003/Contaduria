@@ -1,76 +1,319 @@
-<header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
-  <div class="container-xl px-4">
-    <div class="page-header-content pt-4">
-      <div class="row align-items-center justify-content-between">
-        <div class="col-auto mt-4">
-          <h1 class="page-header-title">
-            <div class="page-header-icon"><i data-feather="users"></i></div>
-            Usuarios
-          </h1>
-          <div class="page-header-subtitle">Gestión de usuarios del sistema</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
+<div class="page-container">
 
-<div class="container-xl px-4 mt-n10">
-  <div class="card">
-    <div class="card-header">Lista de Usuarios</div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>Usuario Demo</td>
-              <td>demo@contadoria.com</td>
-              <td><span class="badge bg-primary">Admin</span></td>
-              <td><span class="badge bg-success">Activo</span></td>
-              <td>
-                <button class="btn btn-sm btn-primary me-2">
-                  <i data-feather="edit-2"></i>
-                </button>
-                <button class="btn btn-sm btn-danger">
-                  <i data-feather="trash-2"></i>
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Usuario Test</td>
-              <td>test@contadoria.com</td>
-              <td><span class="badge bg-info">Usuario</span></td>
-              <td><span class="badge bg-success">Activo</span></td>
-              <td>
-                <button class="btn btn-sm btn-primary me-2">
-                  <i data-feather="edit-2"></i>
-                </button>
-                <button class="btn btn-sm btn-danger">
-                  <i data-feather="trash-2"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- Título -->
+  <div class="page-title">
+    <i data-feather="users"></i>
+    <h2>Lista de Usuarios</h2>
+  </div>
+
+  <!-- Error -->
+  @if (userStore.error()) {
+    <div class="alert alert-danger">
+      {{ userStore.error() }}
+    </div>
+  }
+
+  <!-- Lista -->
+  <div class="user-list">
+
+    @for (user of pagination.paginatedItems(); track user.id) {
+      <div class="user-row-card">
+
+        <!-- Botón eliminar -->
+        <button class="btn-close"
+                title="Eliminar"
+                (click)="deleteUser(user.id)">
+        </button>
+
+        <!-- Header -->
+        <div class="user-row-header">
+          <div class="user-left">
+            <div class="avatar-wrapper">
+              <img
+                class="user-avatar"
+                [src]="user.foto_de_perfil
+                  ? user.foto_de_perfil
+                  : 'https://ui-avatars.com/api/?name=' + user.nombre + '+' + user.apellidos"
+                [alt]="user.nombre + ' ' + user.apellidos"
+              />
+              
+              <!-- Botón editar sobre la foto -->
+              <button class="btn-edit-photo" title="Editar" (click)="openEditForm(user.id)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div>
+              <div class="user-name">
+                {{ user.nombre }} {{ user.apellidos }}
+              </div>
+
+              <span class="status-badge"
+                    [class.active]="!user.is_delete"
+                    [class.inactive]="user.is_delete">
+                {{ user.is_delete ? 'Inactivo' : 'Activo' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="user-row-body">
+          <div><strong>Teléfono:</strong> {{ user.telefono }}</div>
+          <div><strong>Correo:</strong> {{ user.correo }}</div>
+          <div><strong>Cédula:</strong> {{ user.cedula }}</div>
+          <div>
+            <strong>Rol:</strong>
+            <span class="role-badge">
+              {{ getRoleName(user.rol_id) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Botón ver perfil -->
+        <button class="btn-view-profile" (click)="selectUser(user.id)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          Ver Perfil
+        </button>
+
+      </div>
+    }
+
+    <!-- Empty -->
+    @if (!userStore.loading() && userStore.users().length === 0) {
+      <p class="empty-text">No hay usuarios registrados</p>
+    }
+
+  </div>
+
+  <!-- Paginación -->
+  @if (pagination.totalPages() > 1) {
+    <div class="pagination-container">
+      <div class="pagination-info">
+        Mostrando {{ pagination.paginationInfo().startItem }} - {{ pagination.paginationInfo().endItem }} 
+        de {{ pagination.paginationInfo().totalItems }} usuarios
       </div>
       
-      <div class="mt-3">
-        <button class="btn btn-primary">
-          <i data-feather="plus" class="me-2"></i>
-          Agregar Usuario
+      <div class="pagination-controls">
+        <!-- Botón anterior -->
+        <button 
+          class="pagination-btn" 
+          [disabled]="!pagination.paginationInfo().hasPreviousPage"
+          (click)="pagination.previousPage()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <!-- Números de página -->
+        @for (page of pagination.pageNumbers(); track page) {
+          @if (page === -1) {
+            <span class="pagination-ellipsis">...</span>
+          } @else {
+            <button 
+              class="pagination-btn pagination-number" 
+              [class.active]="page === pagination.currentPage()"
+              (click)="pagination.goToPage(page)">
+              {{ page }}
+            </button>
+          }
+        }
+
+        <!-- Botón siguiente -->
+        <button 
+          class="pagination-btn" 
+          [disabled]="!pagination.paginationInfo().hasNextPage"
+          (click)="pagination.nextPage()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </button>
       </div>
     </div>
+  }
+
+  <!-- Crear usuario -->
+  <div class="actions">
+    <button class="btn-primary" (click)="openCreateForm()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Crear usuario
+    </button>
+  </div>
+
+</div>
+
+<!-- Panel lateral para crear usuario -->
+<div class="side-panel" [class.open]="showCreateForm">
+  <div class="side-panel-overlay" (click)="closeCreateForm()"></div>
+  
+  <div class="side-panel-content">
+    <!-- Header -->
+    <div class="side-panel-header">
+      <h3>{{ isEditMode ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}</h3>
+      <button class="btn-close-panel" (click)="closeCreateForm()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Formulario -->
+    <form class="user-form" (ngSubmit)="saveUser()">
+      <!-- Foto de perfil -->
+      <div class="form-group">
+        <label>Foto de Perfil</label>
+        
+        <!-- Preview de la foto -->
+        <div class="photo-upload-container">
+          @if (newUser.foto_de_perfil) {
+            <div class="photo-preview">
+              <img [src]="newUser.foto_de_perfil" alt="Preview">
+              <button type="button" class="btn-remove-photo" (click)="removePhoto()" title="Eliminar foto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          } @else {
+            <div class="photo-placeholder">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              <p>Sin foto</p>
+            </div>
+          }
+        </div>
+        
+        <!-- Input de archivo -->
+        <div class="file-input-wrapper">
+          <input 
+            type="file" 
+            id="photoInput"
+            class="file-input" 
+            (change)="onFileSelected($event)"
+            accept="image/*">
+          <label for="photoInput" class="btn-upload">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Seleccionar imagen
+          </label>
+        </div>
+      </div>
+
+      <!-- Nombre -->
+      <div class="form-group">
+        <label>Nombre <span class="required">*</span></label>
+        <input 
+          type="text" 
+          class="form-control" 
+          [(ngModel)]="newUser.nombre"
+          name="nombre"
+          placeholder="Ingrese el nombre"
+          required>
+      </div>
+
+      <!-- Apellidos -->
+      <div class="form-group">
+        <label>Apellidos <span class="required">*</span></label>
+        <input 
+          type="text" 
+          class="form-control" 
+          [(ngModel)]="newUser.apellidos"
+          name="apellidos"
+          placeholder="Ingrese los apellidos"
+          required>
+      </div>
+
+      <!-- Cédula -->
+      <div class="form-group">
+        <label>Cédula <span class="required">*</span></label>
+        <input 
+          type="text" 
+          class="form-control" 
+          [(ngModel)]="newUser.cedula"
+          name="cedula"
+          placeholder="001-1234567-8"
+          required>
+      </div>
+
+      <!-- Teléfono -->
+      <div class="form-group">
+        <label>Teléfono <span class="required">*</span></label>
+        <input 
+          type="text" 
+          class="form-control" 
+          [(ngModel)]="newUser.telefono"
+          name="telefono"
+          placeholder="809-555-1234"
+          required>
+      </div>
+
+      <!-- Correo -->
+      <div class="form-group">
+        <label>Correo Electrónico <span class="required">*</span></label>
+        <input 
+          type="email" 
+          class="form-control" 
+          [(ngModel)]="newUser.correo"
+          name="correo"
+          placeholder="usuario@ejemplo.com"
+          required>
+      </div>
+
+      <!-- Dirección -->
+      <div class="form-group">
+        <label>Dirección <span class="required">*</span></label>
+        <textarea 
+          class="form-control" 
+          [(ngModel)]="newUser.direccion"
+          name="direccion"
+          placeholder="Ingrese la dirección completa"
+          rows="2"
+          required></textarea>
+      </div>
+
+      <!-- Rol -->
+      <div class="form-group">
+        <label>Rol <span class="required">*</span></label>
+        <select 
+          class="form-control" 
+          [(ngModel)]="newUser.rol_id"
+          name="rol_id"
+          required>
+          <option [value]="1">Administrador</option>
+          <option [value]="2">Empleado</option>
+          <option [value]="3">Usuario</option>
+        </select>
+      </div>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="closeCreateForm()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-submit">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          {{ isEditMode ? 'Guardar' : 'Crear Usuario' }}
+        </button>
+      </div>
+    </form>
   </div>
 </div>
