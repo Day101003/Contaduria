@@ -1,36 +1,36 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { Rol, CreateRolDto, UpdateRolDto } from '../models/rol';
-import { RolService } from '../services/rol.service';
+import { Role, CreateRoleDto, UpdateRoleDto } from '../models/rol';
+import { RoleService } from '../services/rol.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class RolStore {
+export class RoleStore {
   private state = signal<{
-    roles: Rol[];
-    selectedRol: Rol | null;
+    roles: Role[];
+    selectedRole: Role | null;
     loading: boolean;
     error: string | null;
   }>({
     roles: [],
-    selectedRol: null,
+    selectedRole: null,
     loading: false,
     error: null
   });
 
-  // Selectores
+  // Selectors
   readonly roles = computed(() => this.state().roles);
-  readonly activeRoles = computed(() => this.state().roles.filter(rol => !rol.is_delete));
-  readonly selectedRol = computed(() => this.state().selectedRol);
+  readonly activeRoles = computed(() => this.state().roles.filter(role => !role.isDeleted));
+  readonly selectedRole = computed(() => this.state().selectedRole);
   readonly loading = computed(() => this.state().loading);
   readonly error = computed(() => this.state().error);
 
-  constructor(private rolService: RolService) {}
+  constructor(private roleService: RoleService) {}
 
-  // Acciones
+  // Actions
   loadRoles(): void {
     this.state.update(state => ({ ...state, loading: true, error: null }));
-    this.rolService.getRoles().subscribe({
+    this.roleService.getRoles().subscribe({
       next: (roles) => {
         this.state.update(state => ({
           ...state,
@@ -42,7 +42,7 @@ export class RolStore {
         this.state.update(state => ({
           ...state,
           loading: false,
-          error: 'Error al cargar roles'
+          error: 'Error loading roles'
         }));
         console.error('Error loading roles:', error);
       }
@@ -51,7 +51,7 @@ export class RolStore {
 
   loadActiveRoles(): void {
     this.state.update(state => ({ ...state, loading: true, error: null }));
-    this.rolService.getActiveRoles().subscribe({
+    this.roleService.getActiveRoles().subscribe({
       next: (roles) => {
         this.state.update(state => ({
           ...state,
@@ -63,34 +63,34 @@ export class RolStore {
         this.state.update(state => ({
           ...state,
           loading: false,
-          error: 'Error al cargar roles activos'
+          error: 'Error loading active roles'
         }));
         console.error('Error loading active roles:', error);
       }
     });
   }
 
-  selectRol(id: number): void {
-    this.rolService.getRolById(id).subscribe({
-      next: (rol) => {
+  selectRole(id: number): void {
+    this.roleService.getRoleById(id).subscribe({
+      next: (role) => {
         this.state.update(state => ({
           ...state,
-          selectedRol: rol || null
+          selectedRole: role || null
         }));
       },
       error: (error) => {
-        console.error('Error selecting rol:', error);
+        console.error('Error selecting role:', error);
       }
     });
   }
 
-  createRol(rol: CreateRolDto): void {
+  createRole(role: CreateRoleDto): void {
     this.state.update(state => ({ ...state, loading: true, error: null }));
-    this.rolService.createRol(rol).subscribe({
-      next: (newRol) => {
+    this.roleService.createRole(role).subscribe({
+      next: (newRole) => {
         this.state.update(state => ({
           ...state,
-          roles: [...state.roles, newRol],
+          roles: [...state.roles, newRole],
           loading: false
         }));
       },
@@ -98,21 +98,21 @@ export class RolStore {
         this.state.update(state => ({
           ...state,
           loading: false,
-          error: 'Error al crear rol'
+          error: 'Error creating role'
         }));
-        console.error('Error creating rol:', error);
+        console.error('Error creating role:', error);
       }
     });
   }
 
-  updateRol(id: number, rol: UpdateRolDto): void {
+  updateRole(id: number, role: UpdateRoleDto): void {
     this.state.update(state => ({ ...state, loading: true, error: null }));
-    this.rolService.updateRol(id, rol).subscribe({
-      next: (updatedRol) => {
-        if (updatedRol) {
+    this.roleService.updateRole(id, role).subscribe({
+      next: (updatedRole) => {
+        if (updatedRole) {
           this.state.update(state => ({
             ...state,
-            roles: state.roles.map(r => r.id === id ? updatedRol : r),
+            roles: state.roles.map(r => r.id === id ? updatedRole : r),
             loading: false
           }));
         }
@@ -121,21 +121,21 @@ export class RolStore {
         this.state.update(state => ({
           ...state,
           loading: false,
-          error: 'Error al actualizar rol'
+          error: 'Error updating role'
         }));
-        console.error('Error updating rol:', error);
+        console.error('Error updating role:', error);
       }
     });
   }
 
-  deleteRol(id: number): void {
+  deleteRole(id: number): void {
     this.state.update(state => ({ ...state, loading: true, error: null }));
-    this.rolService.deleteRol(id).subscribe({
+    this.roleService.deleteRole(id).subscribe({
       next: (success) => {
         if (success) {
           this.state.update(state => ({
             ...state,
-            roles: state.roles.map(r => r.id === id ? { ...r, is_delete: true } : r),
+            roles: state.roles.map(r => r.id === id ? { ...r, isDeleted: true } : r),
             loading: false
           }));
         }
@@ -144,15 +144,15 @@ export class RolStore {
         this.state.update(state => ({
           ...state,
           loading: false,
-          error: 'Error al eliminar rol'
+          error: 'Error deleting role'
         }));
-        console.error('Error deleting rol:', error);
+        console.error('Error deleting role:', error);
       }
     });
   }
 
-  clearSelectedRol(): void {
-    this.state.update(state => ({ ...state, selectedRol: null }));
+  clearSelectedRole(): void {
+    this.state.update(state => ({ ...state, selectedRole: null }));
   }
 
   clearError(): void {

@@ -1,16 +1,16 @@
-export interface Rol {
+export interface Role {
   id: number;
-  nombre: string;
-  descripcion: string;
-  is_delete?: boolean;
+  name: string;
+  description: string;
+  isDeleted?: boolean;
 }
 
-export interface CreateRolDto {
-  nombre: string;
-  descripcion: string;
+export interface CreateRoleDto {
+  name: string;
+  description: string;
 }
 
-export interface UpdateRolDto {
-  nombre?: string;
-  descripcion?: string;
+export interface UpdateRoleDto {
+  name?: string;
+  description?: string;
 }

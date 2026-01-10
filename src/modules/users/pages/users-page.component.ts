@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { UserStore } from '../store/user.store';
 import { CreateUserDto } from '../models/user';
 import { usePagination } from '../../../shared/composables/usePagination';
+import { UserFormComponent } from '../components/user-form.component';
 
 @Component({
   selector: 'app-users-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, UserFormComponent],
   templateUrl: './users-page.component.html',
   styleUrls: ['./users-page.component.css']
 })
@@ -17,24 +18,24 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
   isEditMode = false;
   editingUserId: number | null = null;
   newUser: CreateUserDto = {
-    nombre: '',
-    apellidos: '',
-    telefono: '',
-    cedula: '',
-    correo: '',
-    rol_id: 2,
-    direccion: '',
-    foto_de_perfil: ''
+    firstName: '',
+    lastName: '',
+    phone: '',
+    idCard: '',
+    email: '',
+    roleId: 2,
+    address: '',
+    profilePhoto: ''
   };
 
-  // Paginación
+  
   pagination: ReturnType<typeof usePagination<any>>;
 
   constructor(readonly userStore: UserStore) {
-    // Inicializar paginación con un array vacío
+    
     this.pagination = usePagination([], { itemsPerPage: 6 });
     
-    // Actualizar paginación cuando cambien los usuarios
+ 
     effect(() => {
       const users = this.userStore.activeUsers();
       this.pagination = usePagination(users, { itemsPerPage: 6 });
@@ -55,7 +56,7 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
   }
 
   deleteUser(id: number): void {
-    if (confirm('¿Eliminar usuario?')) {
+    if (confirm('Delete user?')) {
       this.userStore.deleteUser(id);
     }
   }
@@ -76,14 +77,14 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
       this.isEditMode = true;
       this.editingUserId = userId;
       this.newUser = {
-        nombre: user.nombre,
-        apellidos: user.apellidos,
-        telefono: user.telefono,
-        cedula: user.cedula,
-        correo: user.correo,
-        rol_id: user.rol_id,
-        direccion: user.direccion,
-        foto_de_perfil: user.foto_de_perfil || ''
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        idCard: user.idCard,
+        email: user.email,
+        roleId: user.roleId,
+        address: user.address,
+        profilePhoto: user.profilePhoto || ''
       };
       this.showCreateForm = true;
     }
@@ -98,14 +99,14 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
 
   resetForm(): void {
     this.newUser = {
-      nombre: '',
-      apellidos: '',
-      telefono: '',
-      cedula: '',
-      correo: '',
-      rol_id: 2,
-      direccion: '',
-      foto_de_perfil: ''
+      firstName: '',
+      lastName: '',
+      phone: '',
+      idCard: '',
+      email: '',
+      roleId: 2,
+      address: '',
+      profilePhoto: ''
     };
   }
 
@@ -128,7 +129,7 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
       
       reader.onload = (e: ProgressEvent<FileReader>) => {
         if (e.target?.result) {
-          this.newUser.foto_de_perfil = e.target.result as string;
+          this.newUser.profilePhoto = e.target.result as string;
         }
       };
       
@@ -137,13 +138,13 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
   }
 
   removePhoto(): void {
-    this.newUser.foto_de_perfil = '';
+    this.newUser.profilePhoto = '';
   }
 
   validateForm(): boolean {
-    if (!this.newUser.nombre || !this.newUser.apellidos || !this.newUser.cedula || 
-        !this.newUser.telefono || !this.newUser.correo) {
-      alert('Por favor complete todos los campos obligatorios');
+    if (!this.newUser.firstName || !this.newUser.lastName || !this.newUser.idCard || 
+        !this.newUser.phone || !this.newUser.email) {
+      alert('Please complete all required fields');
       return false;
     }
     return true;

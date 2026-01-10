@@ -1,69 +1,69 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, delay } from 'rxjs';
-import { Rol, CreateRolDto, UpdateRolDto } from '../models/rol';
+import { Role, CreateRoleDto, UpdateRoleDto } from '../models/rol';
 
 @Injectable({
   providedIn: 'root'
 })
-export class RolService {
-  private roles: Rol[] = [
+export class RoleService {
+  private roles: Role[] = [
     {
       id: 1,
-      nombre: 'Administrador',
-      descripcion: 'Acceso completo al sistema con permisos para gestionar usuarios, configuraciones y todas las funcionalidades',
-      is_delete: false
+      name: 'Administrador',
+      description: 'Acceso completo al sistema con permisos para gestionar usuarios, configuraciones y todas las funcionalidades',
+      isDeleted: false
     },
     {
       id: 2,
-      nombre: 'Empleado',
-      descripcion: 'Acceso de solo lectura para auditar y revisar toda la información del sistema',
-      is_delete: false
+      name: 'Empleado',
+      description: 'Acceso de solo lectura para auditar y revisar toda la información del sistema',
+      isDeleted: false
     },
     {
       id: 3,
-      nombre: 'Cliente',
-      descripcion: 'Acceso a reportes ejecutivos, análisis de datos y toma de decisiones estratégicas',
-      is_delete: false
+      name: 'Cliente',
+      description: 'Acceso a reportes ejecutivos, análisis de datos y toma de decisiones estratégicas',
+      isDeleted: false
     },
   ];
 
   private nextId = 8;
 
-  getRoles(): Observable<Rol[]> {
+  getRoles(): Observable<Role[]> {
     return of([...this.roles]).pipe(delay(300));
   }
 
-  getActiveRoles(): Observable<Rol[]> {
-    return of(this.roles.filter(rol => !rol.is_delete)).pipe(delay(300));
+  getActiveRoles(): Observable<Role[]> {
+    return of(this.roles.filter(role => !role.isDeleted)).pipe(delay(300));
   }
 
-  getRolById(id: number): Observable<Rol | undefined> {
-    return of(this.roles.find(rol => rol.id === id)).pipe(delay(300));
+  getRoleById(id: number): Observable<Role | undefined> {
+    return of(this.roles.find(role => role.id === id)).pipe(delay(300));
   }
 
-  createRol(rol: CreateRolDto): Observable<Rol> {
-    const newRol: Rol = {
+  createRole(role: CreateRoleDto): Observable<Role> {
+    const newRole: Role = {
       id: this.nextId++,
-      ...rol,
-      is_delete: false
+      ...role,
+      isDeleted: false
     };
-    this.roles.push(newRol);
-    return of(newRol).pipe(delay(500));
+    this.roles.push(newRole);
+    return of(newRole).pipe(delay(500));
   }
 
-  updateRol(id: number, rol: UpdateRolDto): Observable<Rol | null> {
+  updateRole(id: number, role: UpdateRoleDto): Observable<Role | null> {
     const index = this.roles.findIndex(r => r.id === id);
     if (index !== -1) {
-      this.roles[index] = { ...this.roles[index], ...rol };
+      this.roles[index] = { ...this.roles[index], ...role };
       return of(this.roles[index]).pipe(delay(500));
     }
     return of(null).pipe(delay(500));
   }
 
-  deleteRol(id: number): Observable<boolean> {
+  deleteRole(id: number): Observable<boolean> {
     const index = this.roles.findIndex(r => r.id === id);
     if (index !== -1) {
-      this.roles[index].is_delete = true;
+      this.roles[index].isDeleted = true;
       return of(true).pipe(delay(300));
     }
     return of(false).pipe(delay(300));

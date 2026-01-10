@@ -1,34 +1,34 @@
 export interface User {
   id: number;
-  nombre: string;
-  apellidos: string;
-  foto_de_perfil: string;
-  telefono: string;
-  cedula: string;
-  correo: string;
-  rol_id: number;
-  direccion: string;
-  is_delete: boolean;
+  firstName: string;
+  lastName: string;
+  profilePhoto: string;
+  phone: string;
+  idCard: string;
+  email: string;
+  roleId: number;
+  address: string;
+  isDeleted: boolean;
 }
 
 export interface CreateUserDto {
-  nombre: string;
-  apellidos: string;
-  foto_de_perfil?: string;
-  telefono: string;
-  cedula: string;
-  correo: string;
-  rol_id: number;
-  direccion: string;
+  firstName: string;
+  lastName: string;
+  profilePhoto?: string;
+  phone: string;
+  idCard: string;
+  email: string;
+  roleId: number;
+  address: string;
 }
 
 export interface UpdateUserDto {
-  nombre?: string;
-  apellidos?: string;
-  foto_de_perfil?: string;
-  telefono?: string;
-  cedula?: string;
-  correo?: string;
-  rol_id?: number;
-  direccion?: string;
+  firstName?: string;
+  lastName?: string;
+  profilePhoto?: string;
+  phone?: string;
+  idCard?: string;
+  email?: string;
+  roleId?: number;
+  address?: string;
 }

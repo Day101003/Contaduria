@@ -1,88 +1,89 @@
 import { Component, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RolStore } from '../store/rol.store';
-import { CreateRolDto, Rol } from '../models/rol';
+import { RoleStore } from '../store/rol.store';
+import { CreateRoleDto, Role } from '../models/rol';
 import { usePagination } from '../../../shared/composables/usePagination';
+import { RolFormComponent } from '../components/rol-form.component';
 
 @Component({
   selector: 'app-roles-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RolFormComponent],
   templateUrl: './roles-page.component.html',
   styleUrls: ['./roles-page.component.css']
 })
 export class RolesPageComponent implements OnInit {
   showCreateForm = false;
   isEditMode = false;
-  editingRolId: number | null = null;
-  newRol: CreateRolDto = {
-    nombre: '',
-    descripcion: ''
+  editingRoleId: number | null = null;
+  newRole: CreateRoleDto = {
+    name: '',
+    description: ''
   };
 
   
   pagination: ReturnType<typeof usePagination<any>>;
 
-  constructor(readonly rolStore: RolStore) {
+  constructor(readonly roleStore: RoleStore) {
     
     this.pagination = usePagination([], { itemsPerPage: 6 });
     
    
     effect(() => {
-      const roles = this.rolStore.activeRoles();
+      const roles = this.roleStore.activeRoles();
       this.pagination = usePagination(roles, { itemsPerPage: 6 });
     });
   }
 
   ngOnInit(): void {
-    this.rolStore.loadRoles();
+    this.roleStore.loadRoles();
   }
 
-  deleteRol(id: number): void {
-    if (confirm('¿Eliminar rol?')) {
-      this.rolStore.deleteRol(id);
+  deleteRole(id: number): void {
+    if (confirm('Delete role?')) {
+      this.roleStore.deleteRole(id);
     }
   }
 
-  selectRol(id: number): void {
-    this.rolStore.selectRol(id);
+  selectRole(id: number): void {
+    this.roleStore.selectRole(id);
   }
 
   viewPermissions(id: number): void {
     
-    console.log('Ver permisos del rol:', id);
-    alert('Función de permisos próximamente');
+    console.log('View permissions for role:', id);
+    alert('Permissions feature coming soon');
   }
 
   openCreateForm(): void {
     this.isEditMode = false;
-    this.editingRolId = null;
-    this.newRol = {
-      nombre: '',
-      descripcion: ''
+    this.editingRoleId = null;
+    this.newRole = {
+      name: '',
+      description: ''
     };
     this.showCreateForm = true;
   }
 
-  openEditForm(rolId: number): void {
-    const rol = this.rolStore.roles().find((r: Rol) => r.id === rolId);
-    if (rol) {
+  openEditForm(roleId: number): void {
+    const role = this.roleStore.roles().find((r: Role) => r.id === roleId);
+    if (role) {
       this.isEditMode = true;
-      this.editingRolId = rolId;
-      this.newRol = {
-        nombre: rol.nombre,
-        descripcion: rol.descripcion
+      this.editingRoleId = roleId;
+      this.newRole = {
+        name: role.name,
+        description: role.description
       };
       this.showCreateForm = true;
     }
   }
 
-  saveRol(): void {
-    if (this.isEditMode && this.editingRolId) {
-      this.rolStore.updateRol(this.editingRolId, this.newRol);
+  saveRole(): void {
+    if (this.isEditMode && this.editingRoleId) {
+      this.roleStore.updateRole(this.editingRoleId, this.newRole);
     } else {
-      this.rolStore.createRol(this.newRol);
+      this.roleStore.createRole(this.newRole);
     }
     this.closeForm();
   }
@@ -90,10 +91,10 @@ export class RolesPageComponent implements OnInit {
   closeForm(): void {
     this.showCreateForm = false;
     this.isEditMode = false;
-    this.editingRolId = null;
-    this.newRol = {
-      nombre: '',
-      descripcion: ''
+    this.editingRoleId = null;
+    this.newRole = {
+      name: '',
+      description: ''
     };
   }
 }

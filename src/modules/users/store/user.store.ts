@@ -27,14 +27,14 @@ export class UserStore {
   loading = computed(() => this.state().loading);
   error = computed(() => this.state().error);
   
-  // Usuarios activos (no eliminados)
+  // Active users (not deleted)
   activeUsers = computed(() => 
-    this.state().users.filter(user => !user.is_delete)
+    this.state().users.filter(user => !user.isDeleted)
   );
 
   constructor(private readonly userService: UserService) {}
 
-  // Cargar todos los usuarios
+  // Load all users
   loadUsers(): void {
     this.updateState({ loading: true, error: null });
     
@@ -45,14 +45,14 @@ export class UserStore {
       error: (error) => {
         this.updateState({ 
           loading: false, 
-          error: 'Error al cargar los usuarios' 
+          error: 'Error loading users' 
         });
         console.error('Error loading users:', error);
       }
     });
   }
 
-  // Cargar usuarios activos
+  // Load active users
   loadActiveUsers(): void {
     this.updateState({ loading: true, error: null });
     
@@ -63,14 +63,14 @@ export class UserStore {
       error: (error) => {
         this.updateState({ 
           loading: false, 
-          error: 'Error al cargar los usuarios activos' 
+          error: 'Error loading active users' 
         });
         console.error('Error loading active users:', error);
       }
     });
   }
 
-  // Seleccionar un usuario
+  // Select a user
   selectUser(userId: number): void {
     this.updateState({ loading: true, error: null });
     
@@ -81,14 +81,14 @@ export class UserStore {
       error: (error) => {
         this.updateState({ 
           loading: false, 
-          error: 'Error al cargar el usuario' 
+          error: 'Error loading user' 
         });
         console.error('Error loading user:', error);
       }
     });
   }
 
-  // Crear nuevo usuario
+  // Create new user
   createUser(userData: CreateUserDto): void {
     this.updateState({ loading: true, error: null });
     
@@ -103,14 +103,14 @@ export class UserStore {
       error: (error) => {
         this.updateState({ 
           loading: false, 
-          error: 'Error al crear el usuario' 
+          error: 'Error creating user' 
         });
         console.error('Error creating user:', error);
       }
     });
   }
 
-  // Actualizar usuario
+  // Update user
   updateUser(userId: number, userData: UpdateUserDto): void {
     this.updateState({ loading: true, error: null });
     
@@ -131,14 +131,14 @@ export class UserStore {
       error: (error) => {
         this.updateState({ 
           loading: false, 
-          error: 'Error al actualizar el usuario' 
+          error: 'Error updating user' 
         });
         console.error('Error updating user:', error);
       }
     });
   }
 
-  // Eliminar usuario
+  // Delete user
   deleteUser(userId: number): void {
     this.updateState({ loading: true, error: null });
     
@@ -157,24 +157,24 @@ export class UserStore {
       error: (error) => {
         this.updateState({ 
           loading: false, 
-          error: 'Error al eliminar el usuario' 
+          error: 'Error deleting user' 
         });
         console.error('Error deleting user:', error);
       }
     });
   }
 
-  // Limpiar usuario seleccionado
+  // Clear selected user
   clearSelectedUser(): void {
     this.updateState({ selectedUser: null });
   }
 
-  // Limpiar errores
+  // Clear errors
   clearError(): void {
     this.updateState({ error: null });
   }
 
-  // Método privado para actualizar el estado
+  // Private method to update state
   private updateState(partial: Partial<UserState>): void {
     this.state.update(state => ({ ...state, ...partial }));
   }
