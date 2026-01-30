@@ -1,6 +1,6 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -10,11 +10,15 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements AfterViewInit {
-  constructor() {}
+  constructor(private router: Router) {}
 
   toggleSidebar(): void {
     const body = document.body;
     body.classList.toggle('sidenav-toggled');
+  }
+
+  viewProfile(): void {
+    this.router.navigate(['/users', 1, 'profile']);
   }
 
   ngAfterViewInit(): void {

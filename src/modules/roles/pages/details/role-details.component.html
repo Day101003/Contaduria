@@ -1,0 +1,112 @@
+<div class="role-details-container">
+  <div class="header">
+    <button class="btn-back" (click)="goBack()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Volver
+    </button>
+
+    <h1>Detalles del Rol</h1>
+
+    <div class="header-actions">
+      <button class="btn-secondary" (click)="managePermissions()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        Gestionar Permisos
+      </button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Cargando información...</p>
+    </div>
+  }
+
+  @if (!loading && role) {
+    <div class="content">
+      <div class="info-card">
+        <div class="card-header">
+          <h2>Información General</h2>
+        </div>
+        <div class="card-body">
+          
+          <div class="info-row">
+            <span class="label">Nombre:</span>
+            <span class="value role-name">{{ role.name }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Descripción:</span>
+            <span class="value">{{ role.description }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Estado:</span>
+            <span class="value">
+              @if (!role.isDeleted) {
+                <span class="badge badge-active">Activo</span>
+              } @else {
+                <span class="badge badge-inactive">Inactivo</span>
+              }
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Permisos  -->
+      <div class="permissions-card">
+        <div class="card-header">
+          <h2>Permisos Asignados</h2>
+          <span class="permissions-count">{{ permissions.length }} permisos</span>
+        </div>
+        <div class="card-body">
+          @if (permissions.length === 0) {
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <p>Este rol no tiene permisos asignados</p>
+              <button class="btn-primary" (click)="managePermissions()">
+                Asignar Permisos
+              </button>
+            </div>
+          } @else {
+            <div class="permissions-list">
+              @for (permission of permissions; track permission.id) {
+                <div class="permission-item">
+                  <div class="permission-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
+                  <div class="permission-content">
+                    <h4>{{ permission.name }}</h4>
+                    <p>{{ permission.description }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (!loading && !role) {
+    <div class="error-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h2>Rol no encontrado</h2>
+      <p>El rol que buscas no existe o ha sido eliminado</p>
+      <button class="btn-primary" (click)="goBack()">Volver a Roles</button>
+    </div>
+  }
+</div>

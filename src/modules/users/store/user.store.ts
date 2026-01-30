@@ -27,14 +27,14 @@ export class UserStore {
   loading = computed(() => this.state().loading);
   error = computed(() => this.state().error);
   
-  // Active users (not deleted)
+  
   activeUsers = computed(() => 
     this.state().users.filter(user => !user.isDeleted)
   );
 
   constructor(private readonly userService: UserService) {}
 
-  // Load all users
+
   loadUsers(): void {
     this.updateState({ loading: true, error: null });
     
@@ -52,7 +52,7 @@ export class UserStore {
     });
   }
 
-  // Load active users
+ 
   loadActiveUsers(): void {
     this.updateState({ loading: true, error: null });
     
@@ -70,7 +70,7 @@ export class UserStore {
     });
   }
 
-  // Select a user
+  
   selectUser(userId: number): void {
     this.updateState({ loading: true, error: null });
     
@@ -88,7 +88,7 @@ export class UserStore {
     });
   }
 
-  // Create new user
+ 
   createUser(userData: CreateUserDto): void {
     this.updateState({ loading: true, error: null });
     
@@ -110,7 +110,7 @@ export class UserStore {
     });
   }
 
-  // Update user
+  
   updateUser(userId: number, userData: UpdateUserDto): void {
     this.updateState({ loading: true, error: null });
     
@@ -138,7 +138,7 @@ export class UserStore {
     });
   }
 
-  // Delete user
+ 
   deleteUser(userId: number): void {
     this.updateState({ loading: true, error: null });
     
@@ -164,17 +164,17 @@ export class UserStore {
     });
   }
 
-  // Clear selected user
+  
   clearSelectedUser(): void {
     this.updateState({ selectedUser: null });
   }
 
-  // Clear errors
+  
   clearError(): void {
     this.updateState({ error: null });
   }
 
-  // Private method to update state
+  
   private updateState(partial: Partial<UserState>): void {
     this.state.update(state => ({ ...state, ...partial }));
   }

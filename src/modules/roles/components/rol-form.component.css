@@ -50,9 +50,9 @@
 }
 
 .btn-close {
-  background: #ce3636;
+  background: #ffffff;
   border: none;
-  color: #ffffff;
+  color: #000000;
   cursor: pointer;
   padding: 0.5rem;
   display: flex;
@@ -116,7 +116,7 @@
 .form-actions .btn-primary {
   flex: 1;
   padding: 0.625rem 1rem;
-  background: #3f526d;
+  background: #102d51;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -131,7 +131,7 @@
 }
 
 .form-actions .btn-primary:hover {
-  background: #596f8d;
+  background: #0d2440;
 }
 
 .btn-secondary {
@@ -151,7 +151,7 @@
   background: #b0b8c2;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .side-panel {
     width: 100%;

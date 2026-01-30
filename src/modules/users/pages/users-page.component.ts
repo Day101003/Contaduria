@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { UserStore } from '../store/user.store';
 import { CreateUserDto } from '../models/user';
 import { usePagination } from '../../../shared/composables/usePagination';
@@ -31,7 +32,10 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
   
   pagination: ReturnType<typeof usePagination<any>>;
 
-  constructor(readonly userStore: UserStore) {
+  constructor(
+    readonly userStore: UserStore,
+    private router: Router
+  ) {
     
     this.pagination = usePagination([], { itemsPerPage: 6 });
     
@@ -62,7 +66,11 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
   }
 
   selectUser(id: number): void {
-    this.userStore.selectUser(id);
+    this.router.navigate(['/users', id, 'profile']);
+  }
+
+  viewProfile(id: number): void {
+    this.router.navigate(['/users', id, 'profile']);
   }
 
   openCreateForm(): void {

@@ -1,0 +1,115 @@
+<div class="role-permissions-container">
+  <div class="header">
+    <button class="btn-back" (click)="goBack()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Volver
+    </button>
+    
+    <div class="header-info">
+      @if (rolePermissionStore.roleWithPermissions(); as roleData) {
+        <h1>Permisos del Rol: <span class="role-name">{{ roleData.roleName }}</span></h1>
+        <p class="subtitle">Selecciona los permisos que deseas asignar a este rol</p>
+      }
+    </div>
+
+    <button 
+      class="btn-save" 
+      (click)="savePermissions()"
+      [disabled]="rolePermissionStore.saving()">
+      @if (rolePermissionStore.saving()) {
+        <span>Guardando...</span>
+      } @else {
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+          <polyline points="17 21 17 13 7 13 7 21"></polyline>
+          <polyline points="7 3 7 8 15 8"></polyline>
+        </svg>
+        <span>Guardar Cambios</span>
+      }
+    </button>
+  </div>
+
+  @if (rolePermissionStore.loading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Cargando permisos...</p>
+    </div>
+  }
+
+  @if (rolePermissionStore.error()) {
+    <div class="error-message">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      {{ rolePermissionStore.error() }}
+    </div>
+  }
+
+  @if (rolePermissionStore.roleWithPermissions(); as roleData) {
+    <div class="permissions-grid">
+      @for (permission of pagination.paginatedItems(); track permission.id) {
+        <div class="permission-card" [class.active]="permission.isAssigned">
+          <div class="permission-checkbox">
+            <input 
+              type="checkbox" 
+              [id]="'permission-' + permission.id"
+              [checked]="permission.isAssigned"
+              (change)="onCheckboxChange(permission.id, $event)">
+            <label [for]="'permission-' + permission.id" class="checkbox-label"></label>
+          </div>
+          
+          <div class="permission-info">
+            <h3>{{ permission.name }}</h3>
+            <p>{{ permission.description }}</p>
+          </div>
+
+          <div class="permission-status">
+            @if (permission.isAssigned) {
+              <span class="badge badge-active">Asignado</span>
+            } @else {
+              <span class="badge badge-inactive">No asignado</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (pagination.totalPages() > 1) {
+      <div class="pagination">
+        <button 
+          class="pagination-btn" 
+          (click)="pagination.previousPage()" 
+          [disabled]="pagination.currentPage() === 1">
+          Anterior
+        </button>
+        
+        <div class="pagination-numbers">
+          @for (page of pagination.pageNumbers(); track page) {
+            <button 
+              class="pagination-number" 
+              [class.active]="page === pagination.currentPage()"
+              (click)="pagination.goToPage(page)">
+              {{ page }}
+            </button>
+          }
+        </div>
+        
+        <button 
+          class="pagination-btn" 
+          (click)="pagination.nextPage()" 
+          [disabled]="pagination.currentPage() === pagination.totalPages()">
+          Siguiente
+        </button>
+        
+        <span class="pagination-info">
+          Mostrando {{ pagination.paginationInfo().startItem }} - {{ pagination.paginationInfo().endItem }} de {{ pagination.paginationInfo().totalItems }}
+        </span>
+      </div>
+    }
+  }
+</div>

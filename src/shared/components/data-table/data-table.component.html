@@ -1,0 +1,146 @@
+@if (loading) {
+  <div class="loading">Cargando datos...</div>
+}
+
+@if (error) {
+  <div class="error">{{ error }}</div>
+}
+
+@if (!loading && !error) {
+  <!-- Header con búsqueda y filtros -->
+  <div class="table-header">
+    <div class="filters-bar">
+      <!-- Buscador -->
+      @if (searchable) {
+        <div class="search-box">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input
+            type="text"
+            class="search-input"
+            [placeholder]="searchPlaceholder"
+            [value]="searchTerm()"
+            (input)="onSearchChange($any($event.target).value)"
+          />
+          @if (searchTerm()) {
+            <button class="clear-search" (click)="onSearchChange('')" title="Limpiar búsqueda">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          }
+        </div>
+      }
+      
+      <!-- Combo Box de Filtros -->
+      @if (filters.length > 0) {
+        <div class="filters-dropdown-container">
+          <button class="btn-filters" (click)="toggleFilters()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            Filtros
+            @if (getActiveFiltersCount() > 0) {
+              <span class="filter-badge">{{ getActiveFiltersCount() }}</span>
+            }
+            <svg class="chevron" [class.open]="showFilters()" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          @if (showFilters()) {
+            <div class="filters-dropdown" (click)="$event.stopPropagation()">
+              <div class="filters-header">
+                <span class="filters-title">Filtrar por:</span>
+                @if (getActiveFiltersCount() > 0) {
+                  <button class="btn-clear-filters" (click)="clearAllFilters()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Limpiar filtros
+                  </button>
+                }
+              </div>
+              
+              <div class="filters-content">
+                @for (filter of filters; track filter.key) {
+                  <div class="filter-group">
+                    <label class="filter-label">{{ filter.label }}</label>
+                    <select
+                      class="filter-select"
+                      [value]="activeFilters()[filter.key] || ''"
+                      (change)="onFilterChange(filter.key, $any($event.target).value)">
+                      <option value="">Todos</option>
+                      @for (option of filter.options; track option.value) {
+                        <option [value]="option.value">{{ option.label }}</option>
+                      }
+                    </select>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Info de resultados -->
+    <div class="results-info">
+      <span class="results-count">
+        <strong>{{ filteredData().length }}</strong> resultados
+        @if (searchTerm() || getActiveFiltersCount() > 0) {
+          <span class="filtered-indicator">filtrados</span>
+        }
+      </span>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          @for (column of columns; track column.key) {
+            <th>{{ column.label }}</th>
+          }
+          @if (actions.length > 0) {
+            <th>Acciones</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @if (filteredData().length === 0) {
+          <tr>
+            <td [attr.colspan]="columns.length + (actions.length > 0 ? 1 : 0)" class="empty-message">
+              {{ searchTerm() || getActiveFiltersCount() > 0 ? 'No se encontraron resultados' : emptyMessage }}
+            </td>
+          </tr>
+        }
+        @for (item of filteredData(); track item) {
+          <tr (click)="onRowClick(item)">
+            @for (column of columns; track column.key) {
+              <td [class]="'cell-' + column.key">{{ getValue(item, column.key) }}</td>
+            }
+            @if (actions.length > 0) {
+              <td class="actions">
+                @for (action of actions; track action.label) {
+                  <button 
+                    class="btn-action"
+                    [class]="action.class"
+                    (click)="$event.stopPropagation(); action.handler(item)" 
+                    [title]="action.label">
+                    <span [innerHTML]="getSafeHtml(action.icon)"></span>
+                  </button>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

@@ -6,18 +6,17 @@ import { User, CreateUserDto, UpdateUserDto } from '../models/user';
   providedIn: 'root'
 })
 export class UserService {
-  // Mock data for development
   private mockUsers: User[] = [
     {
       id: 1,
       firstName: 'Dayanna',
       lastName: 'Solano Aguero',
       profilePhoto: 'assets/img/foto1.jpeg',
-      phone: '8095551234',
-      idCard: '001-1234567-8',
-      email: 'dayanna.solano@contadoria.com',
+      phone: '84481308',
+      idCard: '305480349',
+      email: 'dayanna.solano@gmail.com',
       roleId: 1,
-      address: 'Av. 27 de Febrero #123, Santo Domingo',
+      address: 'Av9. Coyol Turrialba',
       isDeleted: false
     },
     {
@@ -74,18 +73,18 @@ export class UserService {
 
   constructor() {}
 
-  // Get all users
+  
   getUsers(): Observable<User[]> {
-    return of([...this.mockUsers]).pipe(delay(500)); // Simulates network latency
+    return of([...this.mockUsers]).pipe(delay(500)); 
   }
 
-  // Get user by ID
+  
   getUserById(id: number): Observable<User> {
     const user = this.mockUsers.find(u => u.id === id);
     return of(user!).pipe(delay(300));
   }
 
-  // Create new user
+  // Crea
   createUser(userData: CreateUserDto): Observable<User> {
     const newUser: User = {
       id: this.nextId++,
@@ -97,7 +96,7 @@ export class UserService {
     return of(newUser).pipe(delay(500));
   }
 
-  // Update user
+  //Actualizaaa
   updateUser(id: number, userData: UpdateUserDto): Observable<User> {
     const index = this.mockUsers.findIndex(u => u.id === id);
     if (index !== -1) {
@@ -107,7 +106,7 @@ export class UserService {
     throw new Error('User not found');
   }
 
-  // Delete user (soft delete)
+  // Eliminaaa
   deleteUser(id: number): Observable<void> {
     const index = this.mockUsers.findIndex(u => u.id === id);
     if (index !== -1) {
@@ -116,7 +115,7 @@ export class UserService {
     return of(void 0).pipe(delay(500));
   }
 
-  // Get active users (not deleted)
+  // Activos
   getActiveUsers(): Observable<User[]> {
     const activeUsers = this.mockUsers.filter(u => !u.isDeleted);
     return of(activeUsers).pipe(delay(500));

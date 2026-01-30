@@ -619,7 +619,7 @@ textarea.form-control {
   background: #8a8a8a;
 }
 
-/* Responsive */
+
 @media (max-width: 1200px) {
   .user-list {
     grid-template-columns: repeat(2, 1fr);

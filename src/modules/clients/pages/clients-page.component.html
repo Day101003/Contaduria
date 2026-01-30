@@ -1,0 +1,18 @@
+<div class="clients-container">
+  <div class="header">
+    <h1>Gestión de Clientes</h1>
+    
+  </div>
+
+  <app-data-table
+    [columns]="columns"
+    [data]="pagination.paginatedItems()"
+    [actions]="actions"
+    [filters]="filters"
+    [loading]="clientStore.loading()"
+    [error]="clientStore.error()"
+    emptyMessage="No hay clientes registrados">
+  </app-data-table>
+
+  <app-pagination [pagination]="pagination"></app-pagination>
+</div>

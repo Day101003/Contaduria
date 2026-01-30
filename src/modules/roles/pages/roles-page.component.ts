@@ -1,6 +1,7 @@
 import { Component, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { RoleStore } from '../store/rol.store';
 import { CreateRoleDto, Role } from '../models/rol';
 import { usePagination } from '../../../shared/composables/usePagination';
@@ -25,7 +26,10 @@ export class RolesPageComponent implements OnInit {
   
   pagination: ReturnType<typeof usePagination<any>>;
 
-  constructor(readonly roleStore: RoleStore) {
+  constructor(
+    readonly roleStore: RoleStore,
+    private router: Router
+  ) {
     
     this.pagination = usePagination([], { itemsPerPage: 6 });
     
@@ -51,9 +55,11 @@ export class RolesPageComponent implements OnInit {
   }
 
   viewPermissions(id: number): void {
-    
-    console.log('View permissions for role:', id);
-    alert('Permissions feature coming soon');
+    this.router.navigate(['/roles', id, 'permissions']);
+  }
+
+  viewDetails(id: number): void {
+    this.router.navigate(['/roles', id, 'details']);
   }
 
   openCreateForm(): void {

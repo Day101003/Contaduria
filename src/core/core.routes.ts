@@ -5,11 +5,22 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 export const CORE_ROUTES: Routes = [
   {
+    path: 'login',
+    loadChildren: () =>
+      import('../modules/login/login.routes')
+        .then(m => m.LOGIN_ROUTES)
+  },
+  {
     path: '',
     component: AdminLayoutComponent,
     children: [
       {
         path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
         component: DashboardComponent,
       },
       {
@@ -23,6 +34,18 @@ export const CORE_ROUTES: Routes = [
         loadChildren: () =>
           import('../modules/roles/roles.routes')
             .then(m => m.ROLES_ROUTES)
+      },
+      {
+        path: 'permissions',
+        loadChildren: () =>
+          import('../modules/permissions/permissions.routes')
+            .then(m => m.PERMISSIONS_ROUTES)
+      },
+      {
+        path: 'clients',
+        loadChildren: () =>
+          import('../modules/clients/clients.routes')
+            .then(m => m.clientsRoutes)
       }
     ]
   },

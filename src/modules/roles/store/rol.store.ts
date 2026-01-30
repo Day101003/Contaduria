@@ -18,7 +18,7 @@ export class RoleStore {
     error: null
   });
 
-  // Selectors
+ 
   readonly roles = computed(() => this.state().roles);
   readonly activeRoles = computed(() => this.state().roles.filter(role => !role.isDeleted));
   readonly selectedRole = computed(() => this.state().selectedRole);
@@ -27,7 +27,7 @@ export class RoleStore {
 
   constructor(private roleService: RoleService) {}
 
-  // Actions
+  
   loadRoles(): void {
     this.state.update(state => ({ ...state, loading: true, error: null }));
     this.roleService.getRoles().subscribe({

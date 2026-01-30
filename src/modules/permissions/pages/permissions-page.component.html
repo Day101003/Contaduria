@@ -1,0 +1,32 @@
+<div class="permissions-container">
+  <div class="header">
+    <h1>Gestión de Permisos</h1>
+    <button class="btn-primary" (click)="openCreateForm()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Crear Permiso
+    </button>
+  </div>
+
+  <app-data-table
+    [columns]="columns"
+    [data]="pagination.paginatedItems()"
+    [actions]="actions"
+    [loading]="permissionStore.loading()"
+    [error]="permissionStore.error()"
+    emptyMessage="No hay permisos registrados">
+  </app-data-table>
+
+  <app-pagination [pagination]="pagination"></app-pagination>
+
+</div>
+
+<app-permission-form
+  [isOpen]="showCreateForm"
+  [isEditMode]="isEditMode"
+  [permission]="newPermission"
+  (closeForm)="closeForm()"
+  (saveForm)="savePermission()">
+</app-permission-form>

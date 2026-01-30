@@ -1,0 +1,32 @@
+@if (pagination.totalPages() > 1) {
+  <div class="pagination">
+    <button 
+      class="pagination-btn" 
+      (click)="pagination.previousPage()" 
+      [disabled]="pagination.currentPage() === 1">
+      Anterior
+    </button>
+    
+    <div class="pagination-numbers">
+      @for (page of pagination.pageNumbers(); track page) {
+        <button 
+          class="pagination-number" 
+          [class.active]="page === pagination.currentPage()"
+          (click)="pagination.goToPage(page)">
+          {{ page }}
+        </button>
+      }
+    </div>
+    
+    <button 
+      class="pagination-btn" 
+      (click)="pagination.nextPage()" 
+      [disabled]="pagination.currentPage() === pagination.totalPages()">
+      Siguiente
+    </button>
+    
+    <span class="pagination-info">
+      Mostrando {{ pagination.paginationInfo().startItem }} - {{ pagination.paginationInfo().endItem }} de {{ pagination.paginationInfo().totalItems }}
+    </span>
+  </div>
+}
