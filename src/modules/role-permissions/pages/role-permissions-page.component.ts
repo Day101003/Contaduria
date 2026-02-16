@@ -59,7 +59,7 @@ export class RolePermissionsPageComponent implements OnInit, OnDestroy {
     const roleData = this.rolePermissionStore.roleWithPermissions();
     if (!roleData) return;
 
-    // Obtener IDs de permisos marcados
+   
     const permissionIds = roleData.permissions
       .filter(p => p.isAssigned)
       .map(p => p.id);

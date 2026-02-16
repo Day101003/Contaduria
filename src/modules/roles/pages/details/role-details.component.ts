@@ -43,11 +43,11 @@ export class RoleDetailsComponent implements OnInit {
   loadRoleDetails(): void {
     this.loading = true;
     
-    // Cargar información del rol
+   
     const allRoles = this.roleStore.roles();
     this.role = allRoles.find(r => r.id === this.roleId) || null;
 
-    // Cargar permisos del rol
+ 
     this.rolePermissionService.getRoleWithPermissions(this.roleId).subscribe({
       next: (roleData) => {
         if (roleData) {
