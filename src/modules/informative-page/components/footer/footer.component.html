@@ -1,0 +1,84 @@
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-grid">
+      <!-- Company Info -->
+      <div class="footer-section">
+        <div class="footer-logo">
+          <img src="assets/img/logo1.png" alt="Despacho Castillo" class="logo-img">
+        </div>
+        <p class="footer-about">
+          Despacho contable con más de 10 años de experiencia brindando servicios profesionales en contabilidad, asesoría fiscal y trámites legales.
+        </p>
+        <div class="social-links">
+          <a href="https://www.facebook.com/share/1EoRXiMVJe/" class="social-link" title="Facebook">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+         
+         
+          <a href="https://wa.link/032b0z" class="social-link whatsapp" title="WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-section">
+        <h4 class="footer-title">Enlaces</h4>
+        <ul class="footer-links">
+          <li><a href="#" (click)="scrollTo('hero')">Inicio</a></li>
+          <li><a href="#" (click)="scrollTo('services')">Servicios</a></li>
+          <li><a href="#" (click)="scrollTo('team')">Equipo</a></li>
+          <li><a [routerLink]="['/login']">Área de Clientes</a></li>
+        </ul>
+      </div>
+
+      <!-- Services -->
+      <div class="footer-section">
+        <h4 class="footer-title">Servicios</h4>
+        <ul class="footer-links">
+          <li><a href="#">Contabilidad General</a></li>
+          <li><a href="#">Declaraciones Fiscales</a></li>
+          <li><a href="#">Trámites Legales</a></li>
+          <li><a href="#">Asesoría Empresarial</a></li>
+          <li><a href="#">Nóminas</a></li>
+          <li><a href="#">Auditorías</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="footer-section">
+        <h4 class="footer-title">Contacto</h4>
+        <ul class="contact-info">
+          <li>
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Turrialba, Cartago. Frente a las oficinas del banco de Costa Rica, segundo piso</span>
+          </li>
+          <li>
+            <i class="fas fa-phone-alt"></i>
+            <a href="tel:+50625577580">  (506) 2557-7580</a>
+          </li>
+          <li>
+            <i class="fas fa-envelope"></i>
+            <a href="mailto:contacto@despachocastillo.com">contacto&#64;despachocastillo.com</a>
+          </li>
+          <li>
+            <i class="fas fa-clock"></i>
+            <span>Lun - Vie: 9:00 AM - 12:00 PM y 1:30 PM - 5:00 PM</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <p class="copyright">
+        © {{ currentYear }} Despacho Castillo. Todos los derechos reservados.
+      </p>
+    </div>
+  </div>
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-top" [class.visible]="showScrollTop" (click)="scrollToTop()" title="Ir arriba">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+</footer>

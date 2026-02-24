@@ -1,0 +1,47 @@
+<section id="team" class="team">
+  <div class="team-container">
+  
+    <div class="section-header">
+      <h4 class="section-subtitle">Nuestro Equipo</h4>
+      <h2 class="section-title">Profesionales a tu Servicio</h2>
+      <p class="section-description">
+        Contamos con un equipo de expertos comprometidos con brindarte el mejor servicio y asesoría personalizada.
+      </p>
+    </div>
+
+   
+    <div class="team-grid">
+      @for (member of teamMembers; track member.name) {
+        <div class="team-card">
+          <div class="member-image">
+            @if (member.image) {
+              <img [src]="member.image" [alt]="member.name">
+            } @else {
+              <div class="image-placeholder">
+                <i class="fas fa-user"></i>
+              </div>
+            }
+            <div class="member-overlay">
+              <div class="social-links">
+                @if (member.social?.email) {
+                  <a [href]="'mailto:' + member.social!.email" class="social-link" title="Email">
+                    <i class="fas fa-envelope"></i>
+                  </a>
+                }
+                @if (member.social?.phone) {
+                  <a [href]="'tel:' + member.social!.phone" class="social-link" title="Teléfono">
+                    <i class="fas fa-phone"></i>
+                  </a>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">{{ member.name }}</h3>
+            <p class="member-position">{{ member.position }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

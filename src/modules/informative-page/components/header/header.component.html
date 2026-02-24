@@ -1,0 +1,71 @@
+<header class="header">
+
+  <div class="top-bar">
+    <div class="top-bar-container">
+      <div class="top-bar-left">
+        <div class="top-bar-item">
+          <i class="fas fa-envelope"></i>
+          <span>info&#64;despachocastillo.com</span>
+        </div>
+        <div class="top-bar-item">
+          <i class="fas fa-phone-alt"></i>
+          <span>(506) 8448-1408</span>
+        </div>
+      </div>
+      <div class="top-bar-right">
+        <a href="https://www.facebook.com/share/1EoRXiMVJe/" class="social-link"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+        <a href="https://wa.link/032b0z" class="social-link"><i class="fab fa-whatsapp"></i></a>
+      </div>
+    </div>
+  </div>
+
+
+  <nav class="main-nav">
+    <div class="nav-container">
+
+      <a routerLink="/" class="logo">
+        <img src="assets/img/logo1.png" alt="Logo" class="logo-img">
+        <span class="logo-text">Despacho Castillo</span>
+      </a>
+
+  
+      <ul class="nav-menu">
+        <li><a (click)="scrollTo('hero')" class="nav-link">Inicio</a></li>
+        <li><a (click)="scrollTo('about')" class="nav-link">Nosotros</a></li>
+        <li><a routerLink="/servicios" class="nav-link">Servicios</a></li>
+        <li><a (click)="scrollTo('team')" class="nav-link">Equipo</a></li>
+        <li><a (click)="scrollTo('contact')" class="nav-link">Contacto</a></li>
+      </ul>
+
+ 
+      <button class="btn-cta" (click)="goToAdmin()">
+        <i class="fas fa-user"></i>
+        Administrador
+      </button>
+
+      <button class="mobile-toggle" (click)="toggleMenu()" [class.active]="isMenuOpen">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+
+  <div class="mobile-menu" [class.open]="isMenuOpen">
+    <ul class="mobile-nav-list">
+      <li><a (click)="scrollTo('hero')" class="mobile-nav-link">Inicio</a></li>
+      <li><a (click)="scrollTo('about')" class="mobile-nav-link">Nosotros</a></li>
+      <li><a (click)="goToServices()" class="mobile-nav-link">Servicios</a></li>
+      <li><a (click)="scrollTo('team')" class="mobile-nav-link">Equipo</a></li>
+      <li><a (click)="scrollTo('contact')" class="mobile-nav-link">Contacto</a></li>
+      <li>
+        <button class="btn-cta-mobile" (click)="goToAdmin()">
+          <i class="fas fa-user"></i>
+          Acceso Clientes
+        </button>
+      </li>
+    </ul>
+  </div>
+</header>

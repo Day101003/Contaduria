@@ -11,7 +11,7 @@ export const CORE_ROUTES: Routes = [
         .then(m => m.LOGIN_ROUTES)
   },
   {
-    path: '',
+    path: 'admin',
     component: AdminLayoutComponent,
     children: [
       {
@@ -49,6 +49,13 @@ export const CORE_ROUTES: Routes = [
       }
     ]
   },
+  {
+    path: '',
+    loadChildren: () =>
+      import('../modules/informative-page/informative-page.routes')
+        .then(m => m.INFORMATIVE_PAGE_ROUTES)
+  },
+  
   { 
     path: '404', 
     component: NotFoundComponent 

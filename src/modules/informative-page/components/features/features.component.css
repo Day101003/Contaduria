@@ -1,0 +1,138 @@
+.features {
+  padding: 100px 0;
+  background: #f8f9fa;
+}
+
+.features-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.features-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+@media (min-width: 992px) {
+  .features-content {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.features-text {
+  text-align: center;
+}
+
+@media (min-width: 992px) {
+  .features-text {
+    text-align: left;
+  }
+}
+
+.section-subtitle {
+  color: #B49C73;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.section-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #0d233d;
+  line-height: 1.2;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+  .section-title {
+    font-size: 42px;
+  }
+}
+
+.section-description {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.8;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+@media (max-width: 576px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feature-card {
+  background: #ffffff;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.feature-number {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 48px;
+  font-weight: 700;
+  color: rgba(13, 35, 61, 0.08);
+  line-height: 1;
+}
+
+.feature-content {
+  position: relative;
+  z-index: 1;
+}
+
+.feature-icon {
+  width: 60px;
+  height: 60px;
+  background: #0d233d;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  transition: all 0.4s ease;
+}
+
+.feature-icon i {
+  font-size: 24px;
+  color: #ffffff;
+
+}
+
+.feature-card:hover .feature-icon {
+  background: #B49C73;
+}
+
+.feature-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0d233d;
+  margin-bottom: 12px;
+}
+
+.feature-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.7;
+  margin: 0;
+}

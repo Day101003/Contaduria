@@ -1,0 +1,42 @@
+<section id="services" class="services">
+  <div class="services-container">
+
+    <div class="section-header">
+      <h4 class="section-subtitle">Nuestros Servicios</h4>
+      <h2 class="section-title">Lo Que Ofrecemos</h2>
+      <p class="section-description">
+        Brindamos servicios contables, fiscales y de asesoría empresarial con la experiencia y profesionalismo que tu empresa necesita.
+      </p>
+    </div>
+
+
+    <div class="services-grid">
+      @for (service of services; track service.title) {
+        <div class="service-card">
+          <div class="service-icon">
+            <i class="fas {{ service.icon }}"></i>
+          </div>
+          <h3 class="service-title">{{ service.title }}</h3>
+          <p class="service-description">{{ service.description }}</p>
+          <button class="btn-tramite" (click)="iniciarTramite(service)">
+            Solicitar Servicio
+          </button>
+        </div>
+      }
+    </div>
+
+
+    <div class="cta-section">
+      <div class="cta-content">
+        <h3 class="cta-title">¿Necesitas un servicio personalizado?</h3>
+        <p class="cta-description">
+          Contáctanos y te asesoraremos según las necesidades específicas de tu empresa.
+        </p>
+      </div>
+      <button class="btn-cta" (click)="contactar()">
+        <i class="fas fa-envelope"></i>
+        Contáctenos
+      </button>
+    </div>
+  </div>
+</section>

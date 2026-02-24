@@ -63,7 +63,7 @@ export class AuthStore {
                         loading: false,
                         error: null
                     });
-                    this.router.navigate(['/dashboard']);
+                    this.router.navigate(['/admin/dashboard']);
                 }
             },
             error: (error) => {

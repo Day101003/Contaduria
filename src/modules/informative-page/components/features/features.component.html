@@ -1,0 +1,29 @@
+<section id="about" class="features">
+  <div class="features-container">
+    <div class="features-content">
+      <div class="features-text">
+        <h4 class="section-subtitle">Por Qué Elegirnos</h4>
+        <h2 class="section-title">Comprometidos con el Éxito de tu Empresa</h2>
+        <p class="section-description">
+          Somos un despacho contable que se distingue por brindar un servicio profesional, 
+          personalizado y de calidad. Nuestro compromiso es ayudarte a cumplir con tus 
+          obligaciones fiscales mientras optimizas los recursos de tu negocio.
+        </p>
+      </div>
+      <div class="features-grid">
+        @for (feature of features; track feature.title; let i = $index) {
+          <div class="feature-card">
+            <div class="feature-number">0{{ i + 1 }}</div>
+            <div class="feature-content">
+              <div class="feature-icon">
+                <i class="fas {{ feature.icon }}"></i>
+              </div>
+              <h3 class="feature-title">{{ feature.title }}</h3>
+              <p class="feature-description">{{ feature.description }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</section>
