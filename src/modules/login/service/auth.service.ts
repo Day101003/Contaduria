@@ -20,12 +20,12 @@ export interface AuthResponse {
 export class AuthService {
    
     private mockUser = {
-        correo: 'admin@contadoria.com',
+        correo: 'admin@contaduria.com',
         contrasena: 'admin123',
         userData: {
             id: 1,
             nombre: 'Administrador',
-            correo: 'admin@contadoria.com',
+            correo: 'admin@contaduria.com',
             rol: 'Administrador'
         }
     };

@@ -76,6 +76,6 @@ export class RolePermissionsPageComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    this.router.navigate(['/roles']);
+    this.router.navigate(['/admin/roles']);
   }
 }

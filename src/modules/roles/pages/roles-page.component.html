@@ -10,6 +10,8 @@
     </button>
   </div>
 
+  <router-outlet></router-outlet>
+
   @if (roleStore.loading()) {
     <div class="loading">Cargando roles...</div>
   }

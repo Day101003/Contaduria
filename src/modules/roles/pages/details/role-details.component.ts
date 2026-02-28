@@ -1,15 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { RoleStore } from '../../store/rol.store';
 import { RolePermissionService } from '../../../role-permissions/services/role-permission.service';
 import { Role } from '../../models/rol';
-
-interface PermissionDisplay {
-  id: number;
-  name: string;
-  description: string;
-}
+import { mapAssignedPermissions, PermissionDisplay } from '../../utils/role-permission.mapper';
 
 @Component({
   selector: 'app-role-details',
@@ -19,10 +15,12 @@ interface PermissionDisplay {
   styleUrls: ['./role-details.component.css']
 })
 export class RoleDetailsComponent implements OnInit {
-  roleId: number = 0;
+
+  roleId = 0;
   role: Role | null = null;
   permissions: PermissionDisplay[] = [];
-  loading: boolean = false;
+  loading = false;
+  errorMessage: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -32,52 +30,49 @@ export class RoleDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.roleId = +params['id'];
-      if (this.roleId) {
-        this.loadRoleDetails();
-      }
-    });
+    const idParam = this.route.snapshot.paramMap.get('id');
+    this.roleId = idParam ? Number(idParam) : 0;
+
+    if (this.roleId) {
+      this.loadRoleDetails();
+    }
   }
 
   loadRoleDetails(): void {
     this.loading = true;
-    
-   
+    this.errorMessage = null;
+
+    // Obtener rol desde el store
     const allRoles = this.roleStore.roles();
     this.role = allRoles.find(r => r.id === this.roleId) || null;
 
- 
+    // Obtener permisos desde el backend
     this.rolePermissionService.getRoleWithPermissions(this.roleId).subscribe({
       next: (roleData) => {
-        if (roleData) {
-          this.permissions = roleData.permissions
-            .filter(p => p.isAssigned)
-            .map(p => ({
-              id: p.id,
-              name: p.name,
-              description: p.description
-            }));
+        if (roleData?.permissions) {
+          this.permissions = mapAssignedPermissions(roleData.permissions);
+        } else {
+          this.permissions = [];
         }
         this.loading = false;
       },
       error: (error) => {
         console.error('Error loading role permissions:', error);
+        this.errorMessage = 'Failed to load permissions.';
         this.loading = false;
       }
     });
   }
 
   goBack(): void {
-    this.router.navigate(['/roles']);
+    this.router.navigate(['/admin/roles']);
   }
 
   editRole(): void {
-    this.router.navigate(['/roles']);
-   
+    this.router.navigate(['/admin/roles', this.roleId, 'edit']);
   }
 
   managePermissions(): void {
-    this.router.navigate(['/roles', this.roleId, 'permissions']);
+    this.router.navigate(['/admin/roles', this.roleId, 'permissions']);
   }
 }

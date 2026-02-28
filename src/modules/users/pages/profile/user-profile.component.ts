@@ -46,10 +46,10 @@ export class UserProfileComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/users']);
+    this.router.navigate(['/admin/users']);
   }
 
   editUser(): void {
-    this.router.navigate(['/users']);
+    this.router.navigate(['/admin/users', this.userId, 'edit']);
   }
 }
