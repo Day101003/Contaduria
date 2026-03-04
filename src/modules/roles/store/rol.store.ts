@@ -1,4 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { Observable, tap, catchError, of } from 'rxjs';
 import { Role, CreateRoleDto, UpdateRoleDto } from '../models/rol';
 import { RoleService } from '../services/rol.service';
 
@@ -84,31 +85,32 @@ export class RoleStore {
     });
   }
 
-  createRole(role: CreateRoleDto): void {
+  createRole(role: CreateRoleDto): Observable<Role | null> {
     this.state.update(state => ({ ...state, loading: true, error: null }));
-    this.roleService.createRole(role).subscribe({
-      next: (newRole) => {
+    return this.roleService.createRole(role).pipe(
+      tap((newRole) => {
         this.state.update(state => ({
           ...state,
           roles: [...state.roles, newRole],
           loading: false
         }));
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         this.state.update(state => ({
           ...state,
           loading: false,
           error: 'Error creating role'
         }));
         console.error('Error creating role:', error);
-      }
-    });
+        return of(null);
+      })
+    );
   }
 
-  updateRole(id: number, role: UpdateRoleDto): void {
+  updateRole(id: number, role: UpdateRoleDto): Observable<Role | null> {
     this.state.update(state => ({ ...state, loading: true, error: null }));
-    this.roleService.updateRole(id, role).subscribe({
-      next: (updatedRole) => {
+    return this.roleService.updateRole(id, role).pipe(
+      tap((updatedRole) => {
         if (updatedRole) {
           this.state.update(state => ({
             ...state,
@@ -116,22 +118,23 @@ export class RoleStore {
             loading: false
           }));
         }
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         this.state.update(state => ({
           ...state,
           loading: false,
           error: 'Error updating role'
         }));
         console.error('Error updating role:', error);
-      }
-    });
+        return of(null);
+      })
+    );
   }
 
-  deleteRole(id: number): void {
+  deleteRole(id: number): Observable<boolean> {
     this.state.update(state => ({ ...state, loading: true, error: null }));
-    this.roleService.deleteRole(id).subscribe({
-      next: (success) => {
+    return this.roleService.deleteRole(id).pipe(
+      tap((success) => {
         if (success) {
           this.state.update(state => ({
             ...state,
@@ -139,16 +142,17 @@ export class RoleStore {
             loading: false
           }));
         }
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         this.state.update(state => ({
           ...state,
           loading: false,
           error: 'Error deleting role'
         }));
         console.error('Error deleting role:', error);
-      }
-    });
+        return of(false);
+      })
+    );
   }
 
   clearSelectedRole(): void {

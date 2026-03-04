@@ -11,6 +11,7 @@ import { UserFormComponent } from '../components/user-form.component';
 import { getRoleName } from '../../../shared/utils/role.utils';
 import { validateUser, createEmptyUser } from '../../../shared/utils/user.utils';
 import { fileToBase64 } from '../../../shared/utils/file.utils';
+import { showConfirmDialog, showSuccessAlert, showErrorAlert } from '../../../shared/utils/alerts';
 
 @Component({
   selector: 'app-users-page',
@@ -55,9 +56,17 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
     (globalThis as any).feather?.replace();
   }
 
-  deleteUser(id: number): void {
-    if (confirm('Delete user?')) {
-      this.userStore.deleteUser(id);
+  async deleteUser(id: number): Promise<void> {
+    const user = this.userStore.users().find(u => u.id === id);
+    const confirmed = await showConfirmDialog(
+      '¿Eliminar usuario?',
+      `¿Está seguro de eliminar el usuario "${user?.firstName || ''} ${user?.lastName || ''}"?`
+    );
+    if (confirmed) {
+      this.userStore.deleteUser(id).subscribe({
+        next: () => showSuccessAlert('Usuario eliminado', 'El usuario ha sido eliminado exitosamente'),
+        error: () => showErrorAlert('Error', 'No se pudo eliminar el usuario')
+      });
     }
   }
 
@@ -113,9 +122,19 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
     }
 
     if (this.isEditMode && this.editingUserId) {
-      this.userStore.updateUser(this.editingUserId, this.newUser);
+      this.userStore.updateUser(this.editingUserId, this.newUser).subscribe({
+        next: (user) => {
+          if (user) showSuccessAlert('Usuario actualizado', 'El usuario ha sido actualizado exitosamente');
+          else showErrorAlert('Error', 'No se pudo actualizar el usuario');
+        }
+      });
     } else {
-      this.userStore.createUser(this.newUser);
+      this.userStore.createUser(this.newUser).subscribe({
+        next: (user) => {
+          if (user) showSuccessAlert('Usuario creado', 'El usuario ha sido creado exitosamente');
+          else showErrorAlert('Error', 'No se pudo crear el usuario');
+        }
+      });
     }
 
     this.closeCreateForm();

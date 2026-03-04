@@ -1,4 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { Observable, tap, catchError, of } from 'rxjs';
 import { Permission, CreatePermissionDto, UpdatePermissionDto } from '../models/permission';
 import { PermissionService } from '../services/permission.service';
 
@@ -84,31 +85,32 @@ export class PermissionStore {
     });
   }
 
-  createPermission(permission: CreatePermissionDto): void {
+  createPermission(permission: CreatePermissionDto): Observable<Permission | null> {
     this.state.update(state => ({ ...state, loading: true, error: null }));
-    this.permissionService.createPermission(permission).subscribe({
-      next: (newPermission) => {
+    return this.permissionService.createPermission(permission).pipe(
+      tap((newPermission) => {
         this.state.update(state => ({
           ...state,
           permissions: [...state.permissions, newPermission],
           loading: false
         }));
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         this.state.update(state => ({
           ...state,
           loading: false,
           error: 'Error creating permission'
         }));
         console.error('Error creating permission:', error);
-      }
-    });
+        return of(null);
+      })
+    );
   }
 
-  updatePermission(id: number, permission: UpdatePermissionDto): void {
+  updatePermission(id: number, permission: UpdatePermissionDto): Observable<Permission | null> {
     this.state.update(state => ({ ...state, loading: true, error: null }));
-    this.permissionService.updatePermission(id, permission).subscribe({
-      next: (updatedPermission) => {
+    return this.permissionService.updatePermission(id, permission).pipe(
+      tap((updatedPermission) => {
         if (updatedPermission) {
           this.state.update(state => ({
             ...state,
@@ -116,22 +118,23 @@ export class PermissionStore {
             loading: false
           }));
         }
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         this.state.update(state => ({
           ...state,
           loading: false,
           error: 'Error updating permission'
         }));
         console.error('Error updating permission:', error);
-      }
-    });
+        return of(null);
+      })
+    );
   }
 
-  deletePermission(id: number): void {
+  deletePermission(id: number): Observable<boolean> {
     this.state.update(state => ({ ...state, loading: true, error: null }));
-    this.permissionService.deletePermission(id).subscribe({
-      next: (success) => {
+    return this.permissionService.deletePermission(id).pipe(
+      tap((success) => {
         if (success) {
           this.state.update(state => ({
             ...state,
@@ -141,15 +144,16 @@ export class PermissionStore {
             loading: false
           }));
         }
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         this.state.update(state => ({
           ...state,
           loading: false,
           error: 'Error deleting permission'
         }));
         console.error('Error deleting permission:', error);
-      }
-    });
+        return of(false);
+      })
+    );
   }
 }

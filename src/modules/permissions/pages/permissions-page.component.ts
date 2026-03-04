@@ -9,6 +9,7 @@ import { PermissionFormComponent } from '../components/permission-form.component
 import { DataTableComponent, TableColumn, TableAction } from '../../../shared/components/data-table/data-table.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { createEmptyPermission } from '../utils/permission.utils';
+import { showConfirmDialog, showSuccessAlert, showErrorAlert } from '../../../shared/utils/alerts';
 
 @Component({
   selector: 'app-permissions-page',
@@ -74,9 +75,19 @@ export class PermissionsPageComponent implements OnInit {
     this.permissionStore.loadPermissions();
   }
 
-  deletePermission(id: number): void {
-    if (confirm('¿Eliminar permiso?')) {
-      this.permissionStore.deletePermission(id);
+  async deletePermission(id: number): Promise<void> {
+    const permission = this.permissionStore.permissions().find(p => p.id === id);
+    const confirmed = await showConfirmDialog(
+      '¿Eliminar permiso?',
+      `¿Está seguro de eliminar el permiso "${permission?.name || ''}"?`
+    );
+    if (confirmed) {
+      this.permissionStore.deletePermission(id).subscribe({
+        next: (success) => {
+          if (success) showSuccessAlert('Permiso eliminado', 'El permiso ha sido eliminado exitosamente');
+          else showErrorAlert('Error', 'No se pudo eliminar el permiso');
+        }
+      });
     }
   }
 
@@ -111,9 +122,19 @@ export class PermissionsPageComponent implements OnInit {
   savePermission(): void {
 
     if (this.isEditMode && this.editingPermissionId) {
-      this.permissionStore.updatePermission(this.editingPermissionId, this.newPermission);
+      this.permissionStore.updatePermission(this.editingPermissionId, this.newPermission).subscribe({
+        next: (permission) => {
+          if (permission) showSuccessAlert('Permiso actualizado', 'El permiso ha sido actualizado exitosamente');
+          else showErrorAlert('Error', 'No se pudo actualizar el permiso');
+        }
+      });
     } else {
-      this.permissionStore.createPermission(this.newPermission);
+      this.permissionStore.createPermission(this.newPermission).subscribe({
+        next: (permission) => {
+          if (permission) showSuccessAlert('Permiso creado', 'El permiso ha sido creado exitosamente');
+          else showErrorAlert('Error', 'No se pudo crear el permiso');
+        }
+      });
     }
 
     this.closeForm();

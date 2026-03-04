@@ -1,4 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { Observable, tap, catchError, of, map } from 'rxjs';
 import { User, CreateUserDto, UpdateUserDto } from '../models/user';
 import { UserService } from '../services/user.service';
 
@@ -13,7 +14,7 @@ interface UserState {
   providedIn: 'root'
 })
 export class UserStore {
-  // Estado privado usando signals
+
   private readonly state = signal<UserState>({
     users: [],
     selectedUser: null,
@@ -21,7 +22,7 @@ export class UserStore {
     error: null
   });
 
-  // Selectores públicos (computed)
+  
   users = computed(() => this.state().users);
   selectedUser = computed(() => this.state().selectedUser);
   loading = computed(() => this.state().loading);
@@ -89,33 +90,34 @@ export class UserStore {
   }
 
  
-  createUser(userData: CreateUserDto): void {
+  createUser(userData: CreateUserDto): Observable<User | null> {
     this.updateState({ loading: true, error: null });
     
-    this.userService.createUser(userData).subscribe({
-      next: (newUser) => {
+    return this.userService.createUser(userData).pipe(
+      tap((newUser) => {
         const currentUsers = this.state().users;
         this.updateState({ 
           users: [...currentUsers, newUser],
           loading: false 
         });
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         this.updateState({ 
           loading: false, 
           error: 'Error creating user' 
         });
         console.error('Error creating user:', error);
-      }
-    });
+        return of(null);
+      })
+    );
   }
 
   
-  updateUser(userId: number, userData: UpdateUserDto): void {
+  updateUser(userId: number, userData: UpdateUserDto): Observable<User | null> {
     this.updateState({ loading: true, error: null });
     
-    this.userService.updateUser(userId, userData).subscribe({
-      next: (updatedUser) => {
+    return this.userService.updateUser(userId, userData).pipe(
+      tap((updatedUser) => {
         const currentUsers = this.state().users;
         const updatedUsers = currentUsers.map(user => 
           user.id === userId ? updatedUser : user
@@ -127,23 +129,24 @@ export class UserStore {
             : this.state().selectedUser,
           loading: false 
         });
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         this.updateState({ 
           loading: false, 
           error: 'Error updating user' 
         });
         console.error('Error updating user:', error);
-      }
-    });
+        return of(null);
+      })
+    );
   }
 
  
-  deleteUser(userId: number): void {
+  deleteUser(userId: number): Observable<boolean> {
     this.updateState({ loading: true, error: null });
     
-    this.userService.deleteUser(userId).subscribe({
-      next: () => {
+    return this.userService.deleteUser(userId).pipe(
+      map(() => {
         const currentUsers = this.state().users;
         const updatedUsers = currentUsers.filter(user => user.id !== userId);
         this.updateState({ 
@@ -153,15 +156,17 @@ export class UserStore {
             : this.state().selectedUser,
           loading: false 
         });
-      },
-      error: (error) => {
+        return true;
+      }),
+      catchError((error) => {
         this.updateState({ 
           loading: false, 
           error: 'Error deleting user' 
         });
         console.error('Error deleting user:', error);
-      }
-    });
+        return of(false);
+      })
+    );
   }
 
   

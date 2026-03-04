@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RolePermissionStore } from '../store/role-permission.store';
 import { usePagination } from '../../../shared/composables/usePagination';
+import { showSuccessAlert, showErrorAlert } from '../../../shared/utils/alerts';
 
 @Component({
   selector: 'app-role-permissions-page',
@@ -67,12 +68,12 @@ export class RolePermissionsPageComponent implements OnInit, OnDestroy {
     this.rolePermissionStore.assignPermissions({
       id_role: this.roleId,
       permissionIds
+    }).subscribe({
+      next: (success) => {
+        if (success) showSuccessAlert('Permisos guardados', 'Los permisos han sido asignados exitosamente');
+        else showErrorAlert('Error', 'No se pudieron guardar los permisos');
+      }
     });
-
-    
-    setTimeout(() => {
-      alert('Permisos guardados exitosamente');
-    }, 600);
   }
 
   goBack(): void {

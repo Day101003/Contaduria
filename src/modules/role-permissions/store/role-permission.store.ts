@@ -1,4 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { Observable, tap, catchError, of } from 'rxjs';
 import { RoleWithPermissions, AssignPermissionsDto } from '../models/role-permission';
 import { RolePermissionService } from '../services/role-permission.service';
 
@@ -47,25 +48,25 @@ export class RolePermissionStore {
     });
   }
 
-  assignPermissions(data: AssignPermissionsDto): void {
+  assignPermissions(data: AssignPermissionsDto): Observable<boolean> {
     this.state.update(state => ({ ...state, saving: true, error: null }));
-    this.rolePermissionService.assignPermissions(data).subscribe({
-      next: (success) => {
+    return this.rolePermissionService.assignPermissions(data).pipe(
+      tap((success) => {
         if (success) {
           this.state.update(state => ({ ...state, saving: false }));
-          
           this.loadRoleWithPermissions(data.id_role);
         }
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         this.state.update(state => ({
           ...state,
           saving: false,
           error: 'Error al guardar los permisos'
         }));
         console.error('Error saving permissions:', error);
-      }
-    });
+        return of(false);
+      })
+    );
   }
 
   clearState(): void {

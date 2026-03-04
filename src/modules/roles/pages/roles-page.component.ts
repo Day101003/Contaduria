@@ -8,6 +8,7 @@ import { CreateRoleDto, Role } from '../models/rol';
 import { usePagination } from '../../../shared/composables/usePagination';
 import { RolFormComponent } from '../components/rol-form.component';
 import { createEmptyRole } from '../utils/role.utils';
+import { showConfirmDialog, showSuccessAlert, showErrorAlert } from '../../../shared/utils/alerts';
 
 @Component({
   selector: 'app-roles-page',
@@ -43,9 +44,19 @@ export class RolesPageComponent implements OnInit {
     this.roleStore.loadRoles();
   }
 
-  deleteRole(id: number): void {
-    if (confirm('Delete role?')) {
-      this.roleStore.deleteRole(id);
+  async deleteRole(id: number): Promise<void> {
+    const role = this.roleStore.roles().find(r => r.id === id);
+    const confirmed = await showConfirmDialog(
+      '¿Eliminar rol?',
+      `¿Está seguro de eliminar el rol "${role?.name || ''}"?`
+    );
+    if (confirmed) {
+      this.roleStore.deleteRole(id).subscribe({
+        next: (success) => {
+          if (success) showSuccessAlert('Rol eliminado', 'El rol ha sido eliminado exitosamente');
+          else showErrorAlert('Error', 'No se pudo eliminar el rol');
+        }
+      });
     }
   }
 
@@ -87,9 +98,19 @@ export class RolesPageComponent implements OnInit {
   saveRole(): void {
 
     if (this.isEditMode && this.editingRoleId) {
-      this.roleStore.updateRole(this.editingRoleId, this.newRole);
+      this.roleStore.updateRole(this.editingRoleId, this.newRole).subscribe({
+        next: (role) => {
+          if (role) showSuccessAlert('Rol actualizado', 'El rol ha sido actualizado exitosamente');
+          else showErrorAlert('Error', 'No se pudo actualizar el rol');
+        }
+      });
     } else {
-      this.roleStore.createRole(this.newRole);
+      this.roleStore.createRole(this.newRole).subscribe({
+        next: (role) => {
+          if (role) showSuccessAlert('Rol creado', 'El rol ha sido creado exitosamente');
+          else showErrorAlert('Error', 'No se pudo crear el rol');
+        }
+      });
     }
 
     this.closeForm();

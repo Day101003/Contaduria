@@ -5,6 +5,7 @@ import { Client } from '../models/clients';
 import { DataTableComponent, TableColumn, TableAction, TableFilter } from '../../../shared/components/data-table/data-table.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { usePagination } from '../../../shared/composables/usePagination';
+import { showConfirmDialog, showSuccessAlert, showErrorAlert } from '../../../shared/utils/alerts';
 
 @Component({
   selector: 'app-clients-page',
@@ -92,9 +93,17 @@ export class ClientsPageComponent implements OnInit {
     console.log('Editar cliente:', id);
   }
 
-  deleteClient(id: number): void {
-    if (confirm('¿Está seguro de eliminar este cliente?')) {
-      this.clientStore.deleteClient(id);
+  async deleteClient(id: number): Promise<void> {
+    const client = this.clientStore.clients().find(c => c.id === id);
+    const confirmed = await showConfirmDialog(
+      '¿Eliminar cliente?',
+      `¿Está seguro de eliminar el cliente "${client?.fistName || ''} ${client?.lastName || ''}"?`
+    );
+    if (confirmed) {
+      this.clientStore.deleteClient(id).subscribe({
+        next: () => showSuccessAlert('Cliente eliminado', 'El cliente ha sido eliminado exitosamente'),
+        error: () => showErrorAlert('Error', 'No se pudo eliminar el cliente')
+      });
     }
   }
 }

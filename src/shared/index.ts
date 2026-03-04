@@ -5,3 +5,6 @@ export * from './components/pagination/pagination.component';
 // Composables
 export * from './composables';
 
+// Utils
+export * from './utils/alerts';
+

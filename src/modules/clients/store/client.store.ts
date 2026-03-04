@@ -1,4 +1,5 @@
 import { Injectable, signal } from "@angular/core";
+import { Observable, tap, catchError, of, map } from 'rxjs';
 import { Client, UpdateClientDto, CreateClientDto } from "../models/clients";
 import { ClientService } from "../services/client.service";
 
@@ -61,56 +62,59 @@ export class ClientStore {
         });
     }
 
-    createClient(clientData: CreateClientDto): void {
+    createClient(clientData: CreateClientDto): Observable<Client | null> {
         this.updateState({ loading: true, error: null });
-        this.clientService.createClient(clientData).subscribe({
-            next: (newClient) => {
+        return this.clientService.createClient(clientData).pipe(
+            tap((newClient) => {
                 const updatedClients = [...this.state().clients, newClient];
                 this.updateState({ clients: updatedClients, loading: false });
-            },
-            error: (error) => {
+            }),
+            catchError((error) => {
                 this.updateState({
                     loading: false,
                     error: 'Error creating client',
                 });
                 console.error('Error creating client:', error);
-            }
-        });
+                return of(null);
+            })
+        );
     }   
-    updateClient(clientId: number, clientData: UpdateClientDto): void {
+    updateClient(clientId: number, clientData: UpdateClientDto): Observable<Client | null> {
         this.updateState({ loading: true, error: null });
-        this.clientService.updateClient(clientId, clientData).subscribe({   
-            next: (updatedClient) => {
+        return this.clientService.updateClient(clientId, clientData).pipe(
+            tap((updatedClient) => {
                 const updatedClients = this.state().clients.map(client =>
                     client.id === clientId ? updatedClient : client
                 );
                 this.updateState({ clients: updatedClients, loading: false });
-            },
-            error: (error) => {
+            }),
+            catchError((error) => {
                 this.updateState({      
                     loading: false,
                     error: 'Error updating client',
                 });
                 console.error('Error updating client:', error);
-            }
-        });
+                return of(null);
+            })
+        );
     }
-    deleteClient(clientId: number): void {
+    deleteClient(clientId: number): Observable<boolean> {
         this.updateState({ loading: true, error: null });
-        this.clientService.deleteClient(clientId).subscribe({
-            next: () => {
+        return this.clientService.deleteClient(clientId).pipe(
+            map(() => {
                 const updatedClients = this.state().clients.filter(client => client.id !== clientId);
                 this.updateState({ clients: updatedClients, loading: false });
-            }
-            ,
-            error: (error) => {
+                return true;
+            }),
+            catchError((error) => {
                 this.updateState({
                     loading: false,
                     error: 'Error deleting client',
                 });
                 console.error('Error deleting client:', error);
-            }
-        });
+                return of(false);
+            })
+        );
     }
     clearSelectedClient(): void {
         this.updateState({ selectClient: null });
