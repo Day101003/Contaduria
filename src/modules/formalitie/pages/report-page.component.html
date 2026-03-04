@@ -1,0 +1,131 @@
+<div class="reports-container">
+  <div class="header">
+    <h1>Gestión de Reportes</h1>
+
+    <button class="btn-primary" (click)="openCreateForm()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Crear Reporte
+    </button>
+  </div>
+
+  @if (reportStore.loading()) {
+    <div class="loading">Cargando reportes...</div>
+  }
+
+  @if (reportStore.error()) {
+    <div class="error">{{ reportStore.error() }}</div>
+  }
+
+  <div class="reports-grid">
+    @for (report of pagination.paginatedItems(); track report.id) {
+
+      <div class="report-card">
+
+        <!-- HEADER -->
+        <div class="card-header">
+          <h3>{{ report.title }}</h3>
+
+          <button
+            class="btn-delete"
+            (click)="deleteReport(report.id)"
+            title="Eliminar">
+
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- IMAGE -->
+        @if (report.image) {
+          <div class="report-image">
+            <img [src]="report.image" alt="Report image">
+          </div>
+        }
+
+        <!-- DESCRIPTION -->
+        <p class="report-description">
+          {{ report.description }}
+        </p>
+
+        <!-- CATEGORY + DATE -->
+        <div class="report-meta">
+          <span class="badge">{{ report.category }}</span>
+          <span class="date">{{ report.date }}</span>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="card-actions">
+
+          <!-- DETALLE (ICONO OJO) -->
+          <button class="btn-details" (click)="viewReport(report.id)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            Detalle
+          </button>
+
+          <!-- EDITAR (ICONO LÁPIZ) -->
+          <button class="btn-edit" (click)="openEditForm(report.id)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            Editar
+          </button>
+
+        </div>
+
+      </div>
+
+    }
+  </div>
+
+  <!-- PAGINACIÓN -->
+  @if (pagination.totalPages() > 1) {
+    <div class="pagination">
+      <button
+        class="pagination-btn"
+        (click)="pagination.previousPage()"
+        [disabled]="pagination.currentPage() === 1">
+        Anterior
+      </button>
+
+      <div class="pagination-numbers">
+        @for (page of pagination.pageNumbers(); track page) {
+          <button
+            class="pagination-number"
+            [class.active]="page === pagination.currentPage()"
+            (click)="pagination.goToPage(page)">
+            {{ page }}
+          </button>
+        }
+      </div>
+
+      <button
+        class="pagination-btn"
+        (click)="pagination.nextPage()"
+        [disabled]="pagination.currentPage() === pagination.totalPages()">
+        Siguiente
+      </button>
+    </div>
+  }
+
+</div>
+
+<app-report-form
+  [isOpen]="showCreateForm"
+  [isEditMode]="isEditMode"
+  [report]="newReport"
+  (closeForm)="closeCreateForm()"
+  (saveForm)="saveReport()">
+</app-report-form>
