@@ -25,6 +25,42 @@ export class RoleService {
       description: 'Acceso a reportes ejecutivos, análisis de datos y toma de decisiones estratégicas',
       isDeleted: false
     },
+    {
+      id: 1,
+      name: 'Administrador',
+      description: 'Acceso completo al sistema con permisos para gestionar usuarios, configuraciones y todas las funcionalidades',
+      isDeleted: false
+    },
+    {
+      id: 2,
+      name: 'Empleado',
+      description: 'Acceso de solo lectura para auditar y revisar toda la información del sistema',
+      isDeleted: false
+    },
+    {
+      id: 3,
+      name: 'Cliente',
+      description: 'Acceso a reportes ejecutivos, análisis de datos y toma de decisiones estratégicas',
+      isDeleted: false
+    },
+    {
+      id: 1,
+      name: 'Administrador',
+      description: 'Acceso completo al sistema con permisos para gestionar usuarios, configuraciones y todas las funcionalidades',
+      isDeleted: false
+    },
+    {
+      id: 2,
+      name: 'Empleado',
+      description: 'Acceso de solo lectura para auditar y revisar toda la información del sistema',
+      isDeleted: false
+    },
+    {
+      id: 3,
+      name: 'Cliente',
+      description: 'Acceso a reportes ejecutivos, análisis de datos y toma de decisiones estratégicas',
+      isDeleted: false
+    },
   ];
 
   private nextId = 8;

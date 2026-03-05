@@ -405,3 +405,38 @@
   }
 }
 
+.status-badge{
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Ajusta colores a tu tema si usas variables */
+.status-pending{
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-in-progress{
+  background: #cfe2ff;
+  color: #084298;
+}
+
+.status-completed{
+  background: #d1e7dd;
+  color: #0f5132;
+}
+
+.status-refused{
+  background: #f8d7da;
+  color: #842029;
+}
+
+.status-default{
+  background: #e2e3e5;
+  color: #41464b;
+}
