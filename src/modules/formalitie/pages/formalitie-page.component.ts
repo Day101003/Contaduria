@@ -74,11 +74,6 @@ export class FormalitiesPageComponent implements OnInit {
     effect(() => {
       const formalities = this.formalitieStore.formalities();
       this.pagination = usePagination(formalities, { itemsPerPage: 10 });
-
-      this.tableData = this.pagination.paginatedItems().map(f => ({
-        ...f,
-        state: `<span class="state-pill ${this.getStateClass(f.state)}">${f.state}</span>`,
-      }));
     });
   }
 
