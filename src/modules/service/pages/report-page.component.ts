@@ -10,6 +10,7 @@ import { ReportFormComponent } from '../components/report-form.component';
 
 import { validateReport, createEmptyReport } from '../../../shared/utils/report.utils';
 import { fileToBase64 } from '../../../shared/utils/file.utils';
+import { showSuccessAlert, showErrorAlert, showConfirmDialog } from '../../../shared/utils/alerts';
 
 @Component({
   selector: 'app-reports-page',
@@ -54,9 +55,22 @@ export class ReportsPageComponent implements OnInit, AfterViewInit {
     (globalThis as any).feather?.replace();
   }
 
-  deleteReport(id: number): void {
-    if (confirm('Delete report?')) {
-      this.reportStore.deleteReport(id);
+  async deleteReport(id: number): Promise<void> {
+    const report = this.reportStore.reports().find(r => r.id === id);
+    const confirmed = await showConfirmDialog(
+      '¿Eliminar plantilla?',
+      `¿Está seguro de eliminar "${report?.title || 'esta plantilla'}"? Esta acción no se puede deshacer.`,
+      'Eliminar',
+      'Cancelar'
+    );
+
+    if (confirmed) {
+      try {
+        await this.reportStore.deleteReport(id);
+        showSuccessAlert('Plantilla eliminada correctamente');
+      } catch (error) {
+        showErrorAlert('Error al eliminar la plantilla');
+      }
     }
   }
 
@@ -98,20 +112,25 @@ export class ReportsPageComponent implements OnInit, AfterViewInit {
     this.newReport = createEmptyReport();
   }
 
-  saveReport(): void {
+  async saveReport(): Promise<void> {
 
     if (!validateReport(this.newReport)) {
-      alert('Please complete all required fields');
+      showErrorAlert('Por favor complete todos los campos requeridos');
       return;
     }
 
-    if (this.isEditMode && this.editingReportId) {
-      this.reportStore.updateReport(this.editingReportId, this.newReport);
-    } else {
-      this.reportStore.createReport(this.newReport);
+    try {
+      if (this.isEditMode && this.editingReportId) {
+        await this.reportStore.updateReport(this.editingReportId, this.newReport);
+        showSuccessAlert('Plantilla actualizada correctamente');
+      } else {
+        await this.reportStore.createReport(this.newReport);
+        showSuccessAlert('Plantilla creada correctamente');
+      }
+      this.closeCreateForm();
+    } catch (error) {
+      showErrorAlert('Error al guardar la plantilla');
     }
-
-    this.closeCreateForm();
   }
 
   async onFileSelected(event: Event): Promise<void> {

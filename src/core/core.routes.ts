@@ -48,9 +48,9 @@ export const CORE_ROUTES: Routes = [
           .then(m => m.clientsRoutes)
     },
 
-    // 👇 AQUI agregas reports
+   
     {
-      path: 'reports',
+      path: 'reportes',
       loadChildren: () =>
         import('../modules/reports/report.routes')
           .then(m => m.REPORTS_ROUTES)

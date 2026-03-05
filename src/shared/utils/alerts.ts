@@ -18,14 +18,19 @@ export function showErrorAlert(title: string, text?: string) {
   });
 }
 
-export async function showConfirmDialog(title: string, text?: string): Promise<boolean> {
+export async function showConfirmDialog(
+  title: string, 
+  text?: string,
+  confirmText: string = 'Sí, continuar',
+  cancelText: string = 'Cancelar'
+): Promise<boolean> {
   const result = await Swal.fire({
     title,
     text,
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'Sí, continuar',
-    cancelButtonText: 'Cancelar',
+    confirmButtonText: confirmText,
+    cancelButtonText: cancelText,
     confirmButtonColor: '#1d1c3c',
     cancelButtonColor: '#d33',
     draggable: true,

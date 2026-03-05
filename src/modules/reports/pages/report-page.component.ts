@@ -1,129 +1,180 @@
-import { Component, OnInit, AfterViewInit, effect } from '@angular/core';
+import { Component, OnInit, AfterViewInit, effect, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { ReportStore } from '../store/report.store';
-import { CreateReportDto } from '../models/report';
+import { GeneratedReportsStore } from '../store/generated-reports.store';
+import { GeneratedReport } from '../models/tramite.model';
+import { getStatusLabel, getStatusColor } from '../utils/status.utils';
+import { ReportTemplate } from '../models/field.model';
 import { usePagination } from '../../../shared/composables/usePagination';
-import { ReportFormComponent } from '../components/report-form.component';
-
-import { validateReport, createEmptyReport } from '../../../shared/utils/report.utils';
-import { fileToBase64 } from '../../../shared/utils/file.utils';
+import { TemplateSelectorComponent } from '../components/template-selector/template-selector.component';
+import { showConfirmDialog, showSuccessAlert, showErrorAlert } from '../../../shared/utils/alerts';
 
 @Component({
   selector: 'app-reports-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReportFormComponent],
+  imports: [CommonModule, FormsModule, TemplateSelectorComponent],
   templateUrl: './report-page.component.html',
   styleUrls: ['./report-page.component.css']
 })
 export class ReportsPageComponent implements OnInit, AfterViewInit {
+  
+  showTemplateSelector = false;
+  
+  
+  statusFilter = signal<string>('all');
+  searchTerm = signal<string>('');
+  
+  
+  readonly ITEMS_PER_PAGE = 6;
+  currentPage = signal(1);
 
-  showCreateForm = false;
-  isEditMode = false;
-  editingReportId: number | null = null;
+  filteredReports = computed(() => {
+    let reports = this.store.reports();
+    
+    const status = this.statusFilter();
+    if (status !== 'all') {
+      reports = reports.filter(r => r.status === status);
+    }
+    
+    const search = this.searchTerm().toLowerCase().trim();
+    if (search) {
+      reports = reports.filter(r => 
+        r.templateName.toLowerCase().includes(search) ||
+        r.userName?.toLowerCase().includes(search) ||
+        r.category?.toLowerCase().includes(search)
+      );
+    }
+    
+    return reports;
+  });
 
-  newReport: CreateReportDto = createEmptyReport();
+  totalPages = computed(() => {
+    return Math.ceil(this.filteredReports().length / this.ITEMS_PER_PAGE);
+  });
 
-  pagination: ReturnType<typeof usePagination<any>>;
+  paginatedReports = computed(() => {
+    const reports = this.filteredReports();
+    const start = (this.currentPage() - 1) * this.ITEMS_PER_PAGE;
+    const end = start + this.ITEMS_PER_PAGE;
+    return reports.slice(start, end);
+  });
+
+  pageNumbers = computed(() => {
+    const pages: number[] = [];
+    for (let i = 1; i <= this.totalPages(); i++) {
+      pages.push(i);
+    }
+    return pages;
+  });
+
+  getStatusLabel = getStatusLabel;
+  getStatusColor = getStatusColor;
 
   constructor(
-    readonly reportStore: ReportStore,
+    readonly store: GeneratedReportsStore,
     private router: Router
   ) {
-
-    this.pagination = usePagination([], { itemsPerPage: 6 });
-
+    
     effect(() => {
-      const reports = this.reportStore.activeReports();
-      this.pagination = usePagination(reports, { itemsPerPage: 6 });
-    });
-
-    effect(() => {
-      this.reportStore.reports();
-      setTimeout(() => (globalThis as any).feather?.replace(), 0);
-    });
+      this.statusFilter();
+      this.searchTerm();
+      this.currentPage.set(1);
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit(): void {
-    this.reportStore.loadReports();
+    this.store.loadReports();
+    this.store.loadTemplates();
   }
 
   ngAfterViewInit(): void {
     (globalThis as any).feather?.replace();
   }
 
-  deleteReport(id: number): void {
-    if (confirm('Delete report?')) {
-      this.reportStore.deleteReport(id);
+  previousPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
     }
   }
 
-  viewReport(id: number): void {
-    this.router.navigate(['/admin/reports', id, 'detail']);
-  }
-
-  openCreateForm(): void {
-    this.isEditMode = false;
-    this.editingReportId = null;
-    this.newReport = createEmptyReport();
-    this.showCreateForm = true;
-  }
-
-  openEditForm(reportId: number): void {
-    const report = this.reportStore.reports().find(r => r.id === reportId);
-
-    if (!report) return;
-
-    this.isEditMode = true;
-    this.editingReportId = reportId;
-
-    this.newReport = {
-      title: report.title,
-      description: report.description,
-      image: report.image || '',
-      category: report.category,
-      date: report.date,
-      active: report.active
-    };
-
-    this.showCreateForm = true;
-  }
-
-  closeCreateForm(): void {
-    this.showCreateForm = false;
-    this.isEditMode = false;
-    this.editingReportId = null;
-    this.newReport = createEmptyReport();
-  }
-
-  saveReport(): void {
-
-    if (!validateReport(this.newReport)) {
-      alert('Please complete all required fields');
-      return;
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
     }
-
-    if (this.isEditMode && this.editingReportId) {
-      this.reportStore.updateReport(this.editingReportId, this.newReport);
-    } else {
-      this.reportStore.createReport(this.newReport);
-    }
-
-    this.closeCreateForm();
   }
 
-  async onFileSelected(event: Event): Promise<void> {
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  openTemplateSelector(): void {
+    this.showTemplateSelector = true;
+  }
+
+  closeTemplateSelector(): void {
+    this.showTemplateSelector = false;
+  }
+
+  onTemplateSelected(template: ReportTemplate): void {
+    this.showTemplateSelector = false;
+    
+    this.router.navigate(['/admin/reportes/create'], { 
+      queryParams: { templateId: template.id } 
+    });
+  }
+
+  viewReport(report: GeneratedReport): void {
+    this.router.navigate(['/admin/reportes', report.id, 'detail']);
+  }
+
+  editReport(report: GeneratedReport): void {
+    this.router.navigate(['/admin/reportes', report.id, 'edit']);
+  }
+
+  async deleteReport(report: GeneratedReport): Promise<void> {
+    const confirmed = await showConfirmDialog(
+      '¿Eliminar reporte?',
+      `¿Está seguro de eliminar el reporte "${report.templateName}"? Esta acción no se puede deshacer.`,
+      'Eliminar',
+      'Cancelar'
+    );
+
+    if (confirmed) {
+      try {
+        await this.store.deleteReport(report.id);
+        showSuccessAlert('Reporte eliminado correctamente');
+      } catch (error) {
+        showErrorAlert('Error al eliminar el reporte. Por favor intente nuevamente.');
+      }
+    }
+  }
+
+  onStatusFilterChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.statusFilter.set(select.value);
+  }
+
+  onSearchChange(event: Event): void {
     const input = event.target as HTMLInputElement;
+    this.searchTerm.set(input.value);
+  }
 
-    if (input.files?.[0]) {
-      this.newReport.image = await fileToBase64(input.files[0]);
+  formatDate(dateString: string): string {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return dateString;
     }
   }
-
-  removePhoto(): void {
-    this.newReport.image = '';
-  }
-
 }

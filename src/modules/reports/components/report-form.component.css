@@ -117,8 +117,8 @@
 
 .form-control:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #0e243f;
+  box-shadow: 0 0 0 3px rgba(14, 36, 63, 0.11);
 }
 
 .form-control::placeholder {
@@ -164,8 +164,13 @@ textarea.form-control {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, opacity 0.2s ease;
   padding: 0;
+  opacity: 0;
+}
+
+.photo-preview:hover .btn-remove-photo {
+  opacity: 1;
 }
 
 .btn-remove-photo:hover {

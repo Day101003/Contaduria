@@ -41,19 +41,19 @@ export class ReportService {
 
   constructor() {}
 
-  // Obtener todos
+
   getReports(): Observable<Report[]> {
     return of([...this.mockReports]).pipe(delay(500));
   }
 
-  // Obtener por ID
+  
   getReportById(id: number): Observable<Report> {
     const report = this.mockReports.find(r => r.id === id);
     if (!report) throw new Error('Report not found');
     return of(report).pipe(delay(300));
   }
 
-  // Crear
+  
   createReport(reportData: CreateReportDto): Observable<Report> {
     const newReport: Report = {
       id: this.nextId++,
@@ -64,7 +64,7 @@ export class ReportService {
     return of(newReport).pipe(delay(500));
   }
 
-  // Actualizar
+  
   updateReport(id: number, reportData: UpdateReportDto): Observable<Report> {
     const index = this.mockReports.findIndex(r => r.id === id);
 
@@ -80,7 +80,7 @@ export class ReportService {
     return of(this.mockReports[index]).pipe(delay(500));
   }
 
-  // Eliminar (Soft delete usando active)
+ 
   deleteReport(id: number): Observable<void> {
     const index = this.mockReports.findIndex(r => r.id === id);
 
@@ -93,7 +93,7 @@ export class ReportService {
     return of(void 0).pipe(delay(500));
   }
 
-  // Solo activos
+
   getActiveReports(): Observable<Report[]> {
     const activeReports = this.mockReports.filter(r => r.active);
     return of(activeReports).pipe(delay(500));

@@ -1,0 +1,222 @@
+<form class="dynamic-form" (ngSubmit)="onSubmit($event)" #formRef="ngForm">
+ 
+  <div *ngIf="template" class="form-header">
+    <h2 class="form-title">{{ template.name }}</h2>
+    <p *ngIf="template.description" class="form-description">{{ template.description }}</p>
+  </div>
+
+  
+  <div *ngIf="steps.length > 1" class="steps-indicator">
+    <div 
+      *ngFor="let step of steps; let i = index" 
+      class="step-item"
+      [class.active]="currentStepIndex === i"
+      [class.completed]="currentStepIndex > i"
+      (click)="goToStep(i)"
+    >
+      <div class="step-number">
+        <span *ngIf="currentStepIndex <= i">{{ i + 1 }}</span>
+        <svg *ngIf="currentStepIndex > i" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <span class="step-title">{{ step.title }}</span>
+      <div *ngIf="i < steps.length - 1" class="step-line" [class.completed]="currentStepIndex > i"></div>
+    </div>
+  </div>
+
+
+  <div *ngIf="steps.length > 1 && steps[currentStepIndex]" class="current-step-header">
+    <h3 class="current-step-title">{{ steps[currentStepIndex].title }}</h3>
+    <span class="step-counter">Paso {{ currentStepIndex + 1 }} de {{ steps.length }}</span>
+  </div>
+
+ 
+  <div class="form-fields" *ngIf="steps[currentStepIndex]">
+    <ng-container *ngFor="let state of steps[currentStepIndex].fields; trackBy: trackByFieldId">
+      
+   
+      <div *ngIf="state.field.type === 'TEXT'" class="field-container" [class.has-error]="state.errors.length > 0 && state.touched">
+        <app-text-field
+          [field]="state.field"
+          [value]="state.value"
+          [disabled]="disabled"
+          (valueChange)="onFieldValueChange(state.field.id, $event)"
+          (blur)="onFieldBlur(state.field.id)"
+        ></app-text-field>
+        <div *ngIf="state.errors.length > 0 && state.touched" class="field-errors">
+          <span *ngFor="let error of state.errors" class="error-message">{{ error }}</span>
+        </div>
+      </div>
+
+
+      <div *ngIf="state.field.type === 'TEXTAREA'" class="field-container" [class.has-error]="state.errors.length > 0 && state.touched">
+        <app-textarea-field
+          [field]="state.field"
+          [value]="state.value"
+          [disabled]="disabled"
+          (valueChange)="onFieldValueChange(state.field.id, $event)"
+          (blur)="onFieldBlur(state.field.id)"
+        ></app-textarea-field>
+        <div *ngIf="state.errors.length > 0 && state.touched" class="field-errors">
+          <span *ngFor="let error of state.errors" class="error-message">{{ error }}</span>
+        </div>
+      </div>
+
+    
+      <div *ngIf="state.field.type === 'NUMBER'" class="field-container" [class.has-error]="state.errors.length > 0 && state.touched">
+        <app-number-field
+          [field]="state.field"
+          [value]="state.value"
+          [disabled]="disabled"
+          (valueChange)="onFieldValueChange(state.field.id, $event)"
+          (blur)="onFieldBlur(state.field.id)"
+        ></app-number-field>
+        <div *ngIf="state.errors.length > 0 && state.touched" class="field-errors">
+          <span *ngFor="let error of state.errors" class="error-message">{{ error }}</span>
+        </div>
+      </div>
+
+     
+      <div *ngIf="state.field.type === 'DATE'" class="field-container" [class.has-error]="state.errors.length > 0 && state.touched">
+        <app-date-field
+          [field]="state.field"
+          [value]="state.value"
+          [disabled]="disabled"
+          (valueChange)="onFieldValueChange(state.field.id, $event)"
+          (blur)="onFieldBlur(state.field.id)"
+        ></app-date-field>
+        <div *ngIf="state.errors.length > 0 && state.touched" class="field-errors">
+          <span *ngFor="let error of state.errors" class="error-message">{{ error }}</span>
+        </div>
+      </div>
+
+      
+      <div *ngIf="state.field.type === 'FILE'" class="field-container" [class.has-error]="state.errors.length > 0 && state.touched">
+        <app-file-field
+          [field]="state.field"
+          [value]="state.value"
+          [disabled]="disabled"
+          (valueChange)="onFieldValueChange(state.field.id, $event)"
+        ></app-file-field>
+        <div *ngIf="state.errors.length > 0 && state.touched" class="field-errors">
+          <span *ngFor="let error of state.errors" class="error-message">{{ error }}</span>
+        </div>
+      </div>
+
+
+      <div *ngIf="state.field.type === 'IMAGE'" class="field-container" [class.has-error]="state.errors.length > 0 && state.touched">
+        <app-image-field
+          [field]="state.field"
+          [value]="state.value"
+          [disabled]="disabled"
+          (valueChange)="onFieldValueChange(state.field.id, $event)"
+        ></app-image-field>
+        <div *ngIf="state.errors.length > 0 && state.touched" class="field-errors">
+          <span *ngFor="let error of state.errors" class="error-message">{{ error }}</span>
+        </div>
+      </div>
+
+      <div *ngIf="state.field.type === 'SELECT'" class="field-container" [class.has-error]="state.errors.length > 0 && state.touched">
+        <app-select-field
+          [field]="state.field"
+          [value]="state.value"
+          [disabled]="disabled"
+          (valueChange)="onFieldValueChange(state.field.id, $event)"
+        ></app-select-field>
+        <div *ngIf="state.errors.length > 0 && state.touched" class="field-errors">
+          <span *ngFor="let error of state.errors" class="error-message">{{ error }}</span>
+        </div>
+      </div>
+
+    
+      <div *ngIf="state.field.type === 'CHECKBOX'" class="field-container" [class.has-error]="state.errors.length > 0 && state.touched">
+        <app-checkbox-field
+          [field]="state.field"
+          [value]="state.value"
+          [disabled]="disabled"
+          (valueChange)="onFieldValueChange(state.field.id, $event)"
+        ></app-checkbox-field>
+        <div *ngIf="state.errors.length > 0 && state.touched" class="field-errors">
+          <span *ngFor="let error of state.errors" class="error-message">{{ error }}</span>
+        </div>
+      </div>
+
+    </ng-container>
+  </div>
+
+
+  <div *ngIf="fieldStates.length === 0" class="empty-state">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+      <line x1="16" y1="13" x2="8" y2="13"></line>
+      <line x1="16" y1="17" x2="8" y2="17"></line>
+      <polyline points="10 9 9 9 8 9"></polyline>
+    </svg>
+    <p>No hay campos configurados para este reporte</p>
+  </div>
+
+  
+  <div *ngIf="fieldStates.length > 0 && showActions" class="form-actions">
+   
+    <ng-container *ngIf="steps.length > 1">
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="previousStep()"
+        [disabled]="disabled || currentStepIndex === 0"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Anterior
+      </button>
+      
+      <div class="flex-spacer"></div>
+      
+      <button 
+        *ngIf="currentStepIndex < steps.length - 1"
+        type="button" 
+        class="btn btn-primary" 
+        (click)="nextStep()"
+        [disabled]="disabled"
+      >
+        Siguiente
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+      
+      <button 
+        *ngIf="currentStepIndex === steps.length - 1"
+        type="submit" 
+        class="btn btn-primary btn-success"
+        [disabled]="disabled || isSubmitting"
+      >
+        <span *ngIf="isSubmitting" class="spinner"></span>
+        {{ submitLabel }}
+      </button>
+    </ng-container>
+
+    
+    <ng-container *ngIf="steps.length <= 1">
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="onCancel()"
+        [disabled]="disabled"
+      >
+        Cancelar
+      </button>
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="disabled || isSubmitting"
+      >
+        <span *ngIf="isSubmitting" class="spinner"></span>
+        {{ submitLabel }}
+      </button>
+    </ng-container>
+  </div>
+</form>

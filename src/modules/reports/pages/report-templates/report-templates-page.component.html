@@ -1,0 +1,197 @@
+<div class="report-templates-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>
+        <ng-container *ngIf="viewMode === 'list'">Plantillas de Reportes</ng-container>
+        <ng-container *ngIf="viewMode === 'create'">Nueva Plantilla</ng-container>
+        <ng-container *ngIf="viewMode === 'edit'">Editar Plantilla</ng-container>
+        <ng-container *ngIf="viewMode === 'preview'">Vista Previa</ng-container>
+      </h1>
+      <p *ngIf="viewMode === 'list'">Administra las plantillas de reportes dinámicos</p>
+      <p *ngIf="viewMode === 'create'">Configura los campos del nuevo formulario</p>
+      <p *ngIf="viewMode === 'edit'">Modifica la configuración del formulario</p>
+      <p *ngIf="viewMode === 'preview'">Así verán los usuarios este formulario</p>
+    </div>
+    <div class="header-actions">
+      <button
+        *ngIf="viewMode === 'list'"
+        type="button"
+        class="btn btn-primary"
+        (click)="showCreateForm()"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Nueva Plantilla
+      </button>
+      <button
+        *ngIf="viewMode !== 'list'"
+        type="button"
+        class="btn btn-secondary"
+        (click)="showList()"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Volver
+      </button>
+    </div>
+  </div>
+
+  <!-- List View -->
+  <div *ngIf="viewMode === 'list'" class="templates-list">
+    <!-- Loading State -->
+    <div *ngIf="templateStore.loading()" class="loading-state">
+      <div class="spinner"></div>
+      <span>Cargando plantillas...</span>
+    </div>
+
+    <!-- Templates Grid -->
+    <div *ngIf="!templateStore.loading()" class="templates-grid">
+      <div
+        *ngFor="let template of paginatedTemplates()"
+        class="template-card"
+        [class.inactive]="!template.active"
+      >
+        <div class="template-header">
+          <h3 class="template-name">{{ template.name }}</h3>
+          <span class="status-badge" [class.active]="template.active">
+            {{ template.active ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+
+        <p *ngIf="template.description" class="template-description">
+          {{ template.description }}
+        </p>
+
+        <div class="template-fields">
+          <span class="fields-count">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+            {{ template.fields.length }} campos
+          </span>
+          <div class="field-types">
+            <span *ngFor="let field of template.fields.slice(0, 3)" class="field-type-tag">
+              {{ getFieldTypeLabel(field.type) }}
+            </span>
+            <span *ngIf="template.fields.length > 3" class="field-type-more">
+              +{{ template.fields.length - 3 }}
+            </span>
+          </div>
+        </div>
+
+        <div class="template-actions">
+          <button
+            type="button"
+            class="action-btn"
+            title="Vista previa"
+            (click)="showPreview(template)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="action-btn"
+            title="Editar"
+            (click)="showEditForm(template)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="action-btn"
+            [title]="template.active ? 'Desactivar' : 'Activar'"
+            (click)="toggleTemplateActive(template)"
+          >
+            <svg *ngIf="template.active" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+            <svg *ngIf="!template.active" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="action-btn action-btn-danger"
+            title="Eliminar"
+            (click)="deleteTemplate(template)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="showPagination()" class="pagination-container">
+      <app-pagination [pagination]="pagination"></app-pagination>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!templateStore.loading() && templateStore.templates().length === 0" class="empty-state">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="3" y1="9" x2="21" y2="9"></line>
+        <line x1="9" y1="21" x2="9" y2="9"></line>
+      </svg>
+      <h3>No hay plantillas</h3>
+      <p>Crea tu primera plantilla de reporte dinámico</p>
+      <button type="button" class="btn btn-primary" (click)="showCreateForm()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Crear Plantilla
+      </button>
+    </div>
+  </div>
+
+  <!-- Create/Edit View -->
+  <div *ngIf="viewMode === 'create' || viewMode === 'edit'" class="builder-container">
+    <app-report-builder
+      [fields]="builderFields"
+      [reportName]="builderName"
+      [reportDescription]="builderDescription"
+      (saveReport)="onSaveReport($event)"
+      (cancel)="onBuilderCancel()"
+    ></app-report-builder>
+  </div>
+
+ 
+  <div *ngIf="viewMode === 'preview' && previewTemplate" class="preview-container">
+    <div class="preview-banner">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+      <span>Modo vista previa - Los datos no se guardarán</span>
+    </div>
+    <div class="preview-card">
+      <app-dynamic-form-renderer
+        [template]="previewTemplate"
+        submitLabel="Enviar (Vista Previa)"
+        (formSubmit)="onPreviewSubmit()"
+        (formCancel)="onPreviewCancel()"
+      ></app-dynamic-form-renderer>
+    </div>
+  </div>
+</div>

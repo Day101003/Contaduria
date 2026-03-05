@@ -83,84 +83,96 @@ export class ReportStore {
     });
   }
 
-  createReport(reportData: CreateReportDto): void {
-    this.updateState({ loading: true, error: null });
+  createReport(reportData: CreateReportDto): Promise<Report> {
+    return new Promise((resolve, reject) => {
+      this.updateState({ loading: true, error: null });
 
-    this.reportService.createReport(reportData).subscribe({
-      next: (newReport) => {
-        const currentReports = this.state().reports;
-        this.updateState({
-          reports: [...currentReports, newReport],
-          loading: false
-        });
-      },
-      error: (error) => {
-        this.updateState({
-          loading: false,
-          error: 'Error creating report'
-        });
-        console.error('Error creating report:', error);
-      }
+      this.reportService.createReport(reportData).subscribe({
+        next: (newReport) => {
+          const currentReports = this.state().reports;
+          this.updateState({
+            reports: [...currentReports, newReport],
+            loading: false
+          });
+          resolve(newReport);
+        },
+        error: (error) => {
+          this.updateState({
+            loading: false,
+            error: 'Error creating report'
+          });
+          console.error('Error creating report:', error);
+          reject(error);
+        }
+      });
     });
   }
 
-  updateReport(reportId: number, reportData: UpdateReportDto): void {
-    this.updateState({ loading: true, error: null });
+  updateReport(reportId: number, reportData: UpdateReportDto): Promise<Report> {
+    return new Promise((resolve, reject) => {
+      this.updateState({ loading: true, error: null });
 
-    this.reportService.updateReport(reportId, reportData).subscribe({
-      next: (updatedReport) => {
-        const currentReports = this.state().reports;
+      this.reportService.updateReport(reportId, reportData).subscribe({
+        next: (updatedReport) => {
+          const currentReports = this.state().reports;
 
-        const updatedReports = currentReports.map(report =>
-          report.id === reportId ? updatedReport : report
-        );
+          const updatedReports = currentReports.map(report =>
+            report.id === reportId ? updatedReport : report
+          );
 
-        this.updateState({
-          reports: updatedReports,
-          selectedReport:
-            this.state().selectedReport?.id === reportId
-              ? updatedReport
-              : this.state().selectedReport,
-          loading: false
-        });
-      },
-      error: (error) => {
-        this.updateState({
-          loading: false,
-          error: 'Error updating report'
-        });
-        console.error('Error updating report:', error);
-      }
+          this.updateState({
+            reports: updatedReports,
+            selectedReport:
+              this.state().selectedReport?.id === reportId
+                ? updatedReport
+                : this.state().selectedReport,
+            loading: false
+          });
+          resolve(updatedReport);
+        },
+        error: (error) => {
+          this.updateState({
+            loading: false,
+            error: 'Error updating report'
+          });
+          console.error('Error updating report:', error);
+          reject(error);
+        }
+      });
     });
   }
 
-  deleteReport(reportId: number): void {
-    this.updateState({ loading: true, error: null });
+  deleteReport(reportId: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.updateState({ loading: true, error: null });
 
-    this.reportService.deleteReport(reportId).subscribe({
-      next: () => {
-        const currentReports = this.state().reports;
+      this.reportService.deleteReport(reportId).subscribe({
+        next: () => {
+          const currentReports = this.state().reports;
 
-        const updatedReports = currentReports.filter(
-          report => report.id !== reportId
-        );
+          const updatedReports = currentReports.filter(
+            report => report.id !== reportId
+          );
 
-        this.updateState({
-          reports: updatedReports,
-          selectedReport:
-            this.state().selectedReport?.id === reportId
-              ? null
-              : this.state().selectedReport,
-          loading: false
-        });
-      },
-      error: (error) => {
-        this.updateState({
-          loading: false,
-          error: 'Error deleting report'
-        });
-        console.error('Error deleting report:', error);
-      }
+          this.updateState({
+            reports: updatedReports,
+            selectedReport:
+              this.state().selectedReport?.id === reportId
+                ? null
+                : this.state().selectedReport,
+            loading: false
+          });
+          resolve(true);
+        },
+        error: (error) => {
+          this.updateState({
+            loading: false,
+            error: 'Error deleting report'
+          });
+          console.error('Error deleting report:', error);
+          reject(error);
+        }
+      });
     });
   }
 
