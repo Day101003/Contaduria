@@ -134,22 +134,24 @@ export class ServiceStore {
     });
   }
 
-  deleteService(serviceId: number): void {
+  deactivateService(serviceId: number): void {
     this.updateState({ loading: true, error: null });
 
-    this.serviceService.deleteService(serviceId).subscribe({
+    this.serviceService.deactivateService(serviceId).subscribe({
       next: () => {
         const currentServices = this.state().services;
 
-        const updatedServices = currentServices.filter(
-          service => service.id !== serviceId
+        const updatedServices = currentServices.map(service =>
+          service.id === serviceId
+            ? { ...service, active: false }
+            : service
         );
 
         this.updateState({
           services: updatedServices,
           selectedService:
             this.state().selectedService?.id === serviceId
-              ? null
+              ? { ...this.state().selectedService!, active: false }
               : this.state().selectedService,
           loading: false
         });

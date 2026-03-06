@@ -43,15 +43,9 @@ export class ServiceService {
       description: 'Consultoría en planificación y estrategia financiera',
       active: false,
     },
-    {
-      id: 6,
-      name: 'Asesoría Financiera',
-      description: 'Consultoría en planificación y estrategia financiera',
-      active: false,
-    }
   ];
 
-  private nextId = 4;
+  private nextId = 7;
 
   constructor() {}
 
@@ -61,7 +55,11 @@ export class ServiceService {
 
   getServiceById(id: number): Observable<Service> {
     const service = this.mockServices.find((s) => s.id === id);
-    if (!service) throw new Error('Service not found');
+
+    if (!service) {
+      throw new Error('Service not found');
+    }
+
     return of(service).pipe(delay(300));
   }
 
@@ -69,6 +67,7 @@ export class ServiceService {
     const newService: Service = {
       id: this.nextId++,
       ...serviceData,
+      active: true,
     };
 
     this.mockServices.push(newService);
@@ -90,14 +89,17 @@ export class ServiceService {
     return of(this.mockServices[index]).pipe(delay(500));
   }
 
-  deleteService(id: number): Observable<void> {
+  deactivateService(id: number): Observable<void> {
     const index = this.mockServices.findIndex((s) => s.id === id);
 
     if (index === -1) {
       throw new Error('Service not found');
     }
 
-    this.mockServices[index].active = false;
+    this.mockServices[index] = {
+      ...this.mockServices[index],
+      active: false,
+    };
 
     return of(void 0).pipe(delay(500));
   }

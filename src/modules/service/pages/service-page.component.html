@@ -29,7 +29,7 @@
 
           <button
             class="btn-delete"
-            (click)="deleteService(service.id)"
+            (click)="onDeactivate(service)"
             title="Eliminar">
 
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -43,15 +43,6 @@
         <p class="report-description">
           {{ service.description }}
         </p>
-
-        <div class="service-meta">
-          <span
-            class="status-badge"
-            [class.active]="service.active"
-            [class.inactive]="!service.active">
-            {{ service.active ? 'Activo' : 'Inactivo' }}
-          </span>
-        </div>
 
         <div class="card-actions">
 

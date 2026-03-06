@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { ServiceStore } from '../store/service.store';
-import { CreateServiceDto } from '../models/service';
+import { CreateServiceDto, Service } from '../models/service';
 import { usePagination } from '../../../shared/composables/usePagination';
 import { ServiceFormComponent } from '../components/service-form.component';
 
@@ -29,7 +29,7 @@ export class ServicesPageComponent implements OnInit, AfterViewInit {
     this.pagination = usePagination([], { itemsPerPage: 6 });
 
     effect(() => {
-      const services = this.serviceStore.services();
+      const services = this.serviceStore.activeServices();
       this.pagination = usePagination(services, { itemsPerPage: 6 });
     });
 
@@ -47,10 +47,13 @@ export class ServicesPageComponent implements OnInit, AfterViewInit {
     (globalThis as any).feather?.replace();
   }
 
-  deleteService(id: number): void {
-    if (confirm('Delete service?')) {
-      this.serviceStore.deleteService(id);
-    }
+  onDeactivate(service: Service): void {
+    const updatedService = {
+      ...service,
+      active: false,
+    };
+
+    this.serviceStore.updateService(service.id, updatedService);
   }
 
   openCreateForm(): void {
