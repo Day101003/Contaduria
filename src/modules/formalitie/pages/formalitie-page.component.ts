@@ -32,6 +32,9 @@ export class FormalitiesPageComponent implements OnInit {
   isEditMode = false;
   editingFormalitieId: number | null = null;
 
+  showViewModal = false;
+  selectedFormalitie: Formalitie | null = null;
+
   newFormalitie: CreateFormalitieDto = createEmptyFormalitie();
 
   tableData: any[] = [];
@@ -46,6 +49,15 @@ export class FormalitiesPageComponent implements OnInit {
   ];
 
   actions: TableAction<Formalitie>[] = [
+    {
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>`,
+      label: 'Ver',
+      class: 'btn-view',
+      handler: (formalitie) => this.viewFormalitie(formalitie),
+    },
     {
       icon: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -77,6 +89,10 @@ export class FormalitiesPageComponent implements OnInit {
     });
   }
 
+  ngOnInit(): void {
+    this.formalitieStore.loadFormalities();
+  }
+
   getStateClass(state: string): string {
     switch (state) {
       case 'PENDING':
@@ -92,8 +108,14 @@ export class FormalitiesPageComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
-    this.formalitieStore.loadFormalities();
+  viewFormalitie(formalitie: Formalitie): void {
+    this.selectedFormalitie = formalitie;
+    this.showViewModal = true;
+  }
+
+  closeViewModal(): void {
+    this.showViewModal = false;
+    this.selectedFormalitie = null;
   }
 
   deleteFormalitie(id: number): void {
@@ -132,7 +154,10 @@ export class FormalitiesPageComponent implements OnInit {
 
   saveFormalitie(): void {
     if (this.isEditMode && this.editingFormalitieId) {
-      this.formalitieStore.updateFormalitie(this.editingFormalitieId, this.newFormalitie);
+      this.formalitieStore.updateFormalitie(
+        this.editingFormalitieId,
+        this.newFormalitie
+      );
     } else {
       this.formalitieStore.createFormalitie(this.newFormalitie);
     }
