@@ -54,6 +54,18 @@ export const CORE_ROUTES: Routes = [
       loadChildren: () =>
         import('../modules/reports/report.routes')
           .then(m => m.REPORTS_ROUTES)
+    }, 
+    {
+      path: 'formalities',
+      loadChildren: () =>
+        import('../modules/formalitie/formalitie.routes')
+          .then(m => m.FORMALITIES_ROUTES)
+    }, 
+    {
+      path: 'services',
+      loadChildren: () =>
+        import('../modules/service/service.routes')
+          .then(m => m.SERVICES_ROUTES)
     }
   ]
 },

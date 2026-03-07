@@ -1,0 +1,82 @@
+@if (isOpen) {
+  <div class="side-panel-overlay" (click)="onClose()">
+    <div class="side-panel" (click)="$event.stopPropagation()">
+      <div class="panel-header">
+        <h2>{{ isEditMode ? 'Editar Trámite' : 'Crear Trámite' }}</h2>
+        <button class="btn-close" (click)="onClose()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" class="form">
+        <div class="form-group">
+          <label for="service">Servicio *</label>
+          <input
+            type="text"
+            id="service"
+            [(ngModel)]="formalitie.service"
+            name="service"
+            required
+            placeholder="Ingrese el servicio">
+        </div>
+
+        <div class="form-group">
+          <label for="client">Cliente *</label>
+          <input
+            type="text"
+            id="client"
+            [(ngModel)]="formalitie.client"
+            name="client"
+            required
+            placeholder="Ingrese el cliente">
+        </div>
+
+        <div class="form-group">
+          <label for="user">Usuario *</label>
+          <input
+            type="text"
+            id="user"
+            [(ngModel)]="formalitie.user"
+            name="user"
+            required
+            placeholder="Ingrese el usuario">
+        </div>
+
+        <div class="form-group">
+          <label for="state">Estado *</label>
+          <select
+            id="state"
+            [(ngModel)]="formalitie.state"
+            name="state"
+            required>
+            <option value="" disabled>Seleccione un estado</option>
+            <option value="PENDING">Pendiente</option>
+            <option value="IN_PROGRESS">En Progreso</option>
+            <option value="COMPLETED">Completado</option>
+            <option value="REFUSED">Rechazado</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="applicationDate">Fecha de aplicación *</label>
+          <input
+            type="datetime-local"
+            id="applicationDate"
+            [(ngModel)]="formalitie.applicationDate"
+            name="applicationDate"
+            required>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="onClose()">Cancelar</button>
+          <button type="submit" class="btn-primary">
+            {{ isEditMode ? 'Actualizar' : 'Crear' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
