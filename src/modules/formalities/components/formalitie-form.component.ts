@@ -16,21 +16,32 @@ export class FormalitieFormComponent {
   @Input() isEditMode = false;
 
   @Input() formalitie: CreateFormalitieDto = {
-    service: '',
-    client: '',
-    user: '',
-    state: 'PENDING',
-    applicationDate: ''
+    title: '',
+    description: '',
+    image: '',
+    category: '',
+    date: '',
+    active: true
   };
 
   @Output() closeForm = new EventEmitter<void>();
-  @Output() saveForm = new EventEmitter<void>();
+  @Output() saveForm = new EventEmitter<CreateFormalitieDto>();
+  @Output() photoChange = new EventEmitter<Event>();
+  @Output() photoRemove = new EventEmitter<void>();
 
   onClose(): void {
     this.closeForm.emit();
   }
 
   onSubmit(): void {
-    this.saveForm.emit();
+    this.saveForm.emit(this.formalitie);
+  }
+
+  onFileSelected(event: Event): void {
+    this.photoChange.emit(event);
+  }
+
+  onRemovePhoto(): void {
+    this.photoRemove.emit();
   }
 }

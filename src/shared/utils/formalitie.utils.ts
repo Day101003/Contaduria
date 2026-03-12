@@ -1,23 +1,13 @@
-import { CreateFormalitieDto } from '../../modules/formalitie/models/formalitie';
+import { CreateGeneratedFormalitieDto } from '../../modules/formalities/models/formalitie.model';
 
-export function validateFormalitie(formalitie: CreateFormalitieDto): boolean {
-  return !!(
-    formalitie.service &&
-    formalitie.client &&
-    formalitie.user &&
-    formalitie.state &&
-    formalitie.applicationDate
-  );
+export function isFormalitieComplete(
+  formalitie: Partial<CreateGeneratedFormalitieDto>
+): boolean {
+  return formalitie.templateId !== undefined && formalitie.templateId !== null;
 }
 
-export function createEmptyFormalitie(): CreateFormalitieDto {
+export function createEmptyFormalitie(): CreateGeneratedFormalitieDto {
   return {
-    service: null,
-    client: null,
-    user: null,
-    state: "PENDING",
-    applicationDate: ''
+    templateId: 0
   };
 }
-
-

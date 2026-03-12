@@ -1,0 +1,168 @@
+<div class="formalities-container">
+  <div class="header">
+    <h1>Lista de trámites</h1>
+
+    <button class="btn-primary" (click)="openTemplateSelector()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Crear trámites
+    </button>
+  </div>
+
+  <div class="filters-bar">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input
+        type="text"
+        placeholder="Buscar por nombre, usuario o categoría..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($event)">
+    </div>
+
+    <div class="filter-select">
+      <label>Estado:</label>
+      <select [value]="statusFilter()" (change)="onStatusFilterChange($event)">
+        <option value="all">Todos</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="en_proceso">En Proceso</option>
+        <option value="completado">Completado</option>
+        <option value="rechazado">Rechazado</option>
+      </select>
+    </div>
+  </div>
+
+  @if (store.loading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Cargando formalities...</p>
+    </div>
+  }
+
+  @if (store.error()) {
+    <div class="error">{{ store.error() }}</div>
+  }
+
+  @if (!store.loading() && filteredFormalities().length === 0) {
+    <div class="empty-state">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      @if (searchTerm() || statusFilter() !== 'all') {
+        <h3>No se encontraron formalities</h3>
+        <p>Intenta ajustar los filtros de búsqueda</p>
+      } @else {
+        <h3>No hay formalities creadas</h3>
+        <p>Haz clic en "Crear Formalitie" para empezar</p>
+      }
+    </div>
+  }
+
+  @if (!store.loading() && paginatedFormalities().length > 0) {
+    <div class="formalities-grid">
+      @for (formalitie of paginatedFormalities(); track formalitie.id) {
+        <div class="formalitie-card">
+          <div class="card-header">
+            <h3>{{ formalitie.templateName }}</h3>
+            <button
+              class="btn-delete"
+              (click)="deleteFormalitie(formalitie)"
+              title="Eliminar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="status-row">
+            <span class="status-badge" [class]="getStatusColor(formalitie.status)">
+              {{ getStatusLabel(formalitie.status) }}
+            </span>
+          </div>
+
+          <div class="formalitie-meta">
+            @if (formalitie.category) {
+              <span class="badge">{{ formalitie.category }}</span>
+            }
+            <span class="date">{{ formatDate(formalitie.createdAt) }}</span>
+          </div>
+
+          @if (formalitie.userName) {
+            <p class="formalitie-user">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              {{ formalitie.userName }}
+            </p>
+          }
+
+          <div class="card-actions">
+            <button class="btn-details" (click)="viewFormalitie(formalitie)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              Detalle
+            </button>
+
+            <button class="btn-edit" (click)="editFormalitie(formalitie)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              Editar
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button
+          class="pagination-btn"
+          (click)="previousPage()"
+          [disabled]="currentPage() === 1">
+          Anterior
+        </button>
+
+        <div class="pagination-numbers">
+          @for (page of pageNumbers(); track page) {
+            <button
+              class="pagination-number"
+              [class.active]="page === currentPage()"
+              (click)="goToPage(page)">
+              {{ page }}
+            </button>
+          }
+        </div>
+
+        <button
+          class="pagination-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage() === totalPages()">
+          Siguiente
+        </button>
+      </div>
+    }
+  }
+</div>
+
+<app-template-selector
+  [isOpen]="showTemplateSelector"
+  [templates]="store.activeTemplates()"
+  [loading]="store.loading()"
+  (close)="closeTemplateSelector()"
+  (select)="onTemplateSelected($event)">
+</app-template-selector>
