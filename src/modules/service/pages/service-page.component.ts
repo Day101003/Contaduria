@@ -8,6 +8,7 @@ import { usePagination } from '../../../shared/composables/usePagination';
 import { ServiceFormComponent } from '../components/service-form.component';
 
 import { validateService, createEmptyService } from '../../../shared/utils/service.utils';
+import { initFeatherIcons } from '../../../shared/utils/icon.utils';
 
 @Component({
   selector: 'app-services-page',
@@ -35,7 +36,7 @@ export class ServicesPageComponent implements OnInit, AfterViewInit {
 
     effect(() => {
       this.serviceStore.services();
-      setTimeout(() => (globalThis as any).feather?.replace(), 0);
+      initFeatherIcons();
     });
   }
 
@@ -44,7 +45,7 @@ export class ServicesPageComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    (globalThis as any).feather?.replace();
+    initFeatherIcons();
   }
 
   onDeactivate(service: Service): void {

@@ -10,6 +10,7 @@ import { ReportTemplate } from '../models/field.model';
 import { usePagination } from '../../../shared/composables/usePagination';
 import { TemplateSelectorComponent } from '../components/template-selector/template-selector.component';
 import { showConfirmDialog, showSuccessAlert, showErrorAlert } from '../../../shared/utils/alerts';
+import { formatDateTime } from '../../../shared/utils/date.utils';
 
 @Component({
   selector: 'app-reports-page',
@@ -163,18 +164,5 @@ export class ReportsPageComponent implements OnInit, AfterViewInit {
     this.searchTerm.set(input.value);
   }
 
-  formatDate(dateString: string): string {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch {
-      return dateString;
-    }
-  }
+  formatDate = formatDateTime;
 }

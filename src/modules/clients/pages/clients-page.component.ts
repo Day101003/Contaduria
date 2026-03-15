@@ -1,5 +1,6 @@
 import { Component, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { ClientStore } from '../store/client.store';
 import { Client } from '../models/clients';
 import { DataTableComponent, TableColumn, TableAction, TableFilter } from '../../../shared/components/data-table/data-table.component';
@@ -25,13 +26,20 @@ export class ClientsPageComponent implements OnInit {
   ];
 
   actions: TableAction<Client>[] = [
- 
-    
     {
-      icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="3 6 5 6 21 6"></polyline>
-        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-      </svg>`,
+      icon: '<i class="fas fa-eye"></i>',
+      label: 'Ver detalles',
+      class: 'btn-view',
+      handler: (client) => this.viewClient(client.id)
+    },
+    {
+      icon: '<i class="fas fa-edit"></i>',
+      label: 'Editar',
+      class: 'btn-edit',
+      handler: (client) => this.editClient(client.id)
+    },
+    {
+      icon: '<i class="fas fa-trash"></i>',
       label: 'Eliminar',
       class: 'btn-delete',
       handler: (client) => this.deleteClient(client.id)
@@ -71,7 +79,10 @@ export class ClientsPageComponent implements OnInit {
 
   pagination: ReturnType<typeof usePagination<Client>>;
 
-  constructor(readonly clientStore: ClientStore) {
+  constructor(
+    readonly clientStore: ClientStore,
+    private router: Router
+  ) {
     this.pagination = usePagination<Client>([], { itemsPerPage: 10 });
     
     effect(() => {
@@ -86,11 +97,11 @@ export class ClientsPageComponent implements OnInit {
 
   viewClient(id: number): void {
     this.clientStore.selectClient(id);
-    console.log('Ver cliente:', id);
+    this.router.navigate(['/admin/clients', id]);
   }
 
   editClient(id: number): void {
-    console.log('Editar cliente:', id);
+    this.router.navigate(['/admin/clients', id, 'edit']);
   }
 
   async deleteClient(id: number): Promise<void> {

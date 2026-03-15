@@ -6,7 +6,7 @@
   min-height: 100vh;
 }
 
-/* Loading & Error States */
+
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -83,7 +83,7 @@
   background: #1a3558;
 }
 
-/* Hero Header */
+
 .hero-header {
   background: white;
   border-radius: 1rem;
@@ -96,6 +96,13 @@
   height: 120px;
   background: linear-gradient(135deg, #a9abaf 0%, #a9abaf 50%, #a9abaf 100%);
   position: relative;
+}
+
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
 }
 
 .hero-content {
@@ -156,14 +163,14 @@
   padding-bottom: 0.5rem;
 }
 
-.user-name {
+.client-name {
   font-size: 1.75rem;
   font-weight: 700;
   color: #1f2937;
   margin: 0 0 0.5rem 0;
 }
 
-.user-meta {
+.client-meta {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
@@ -182,11 +189,6 @@
 
 .meta-badge i {
   font-size: 0.5rem;
-}
-
-.role-badge {
-  background: #eff6ff;
-  color: #1d4ed8;
 }
 
 .badge-active {
@@ -370,6 +372,24 @@
   font-size: 0.95rem;
 }
 
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 0.375rem;
+  color: #374151;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-add:hover {
+  background: #e5e7eb;
+}
+
 .link-view-all {
   font-size: 0.8rem;
   color: #224472;
@@ -459,40 +479,25 @@
   color: #374151;
 }
 
-/* Role Display */
-.role-display {
+/* Notes Empty */
+.notes-empty {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 1.5rem 1.25rem;
+  padding: 2.5rem 1.5rem;
+  color: #9ca3af;
+  gap: 0.5rem;
 }
 
-.role-icon-lg {
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #224472, #1a3558);
-  border-radius: 0.75rem;
-  color: white;
-  font-size: 1.5rem;
+.notes-empty i {
+  font-size: 2rem;
+  opacity: 0.5;
 }
 
-.role-info h4 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 0.25rem 0;
+.notes-empty span {
+  font-size: 0.9rem;
 }
 
-.role-info p {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-}
-
-/* Activity Timeline */
 .activity-timeline {
   padding: 1rem 1.25rem;
 }
@@ -550,6 +555,13 @@
   font-size: 0.9rem;
   font-weight: 500;
   color: #1f2937;
+}
+
+.timeline-desc {
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 0.125rem;
 }
 
 .timeline-date {
@@ -639,7 +651,7 @@
     height: 90px;
   }
 
-  .user-name {
+  .client-name {
     font-size: 1.5rem;
   }
 
@@ -685,10 +697,5 @@
     height: 40px;
     padding: 0;
     justify-content: center;
-  }
-
-  .user-meta {
-    flex-direction: column;
-    gap: 0.5rem;
   }
 }

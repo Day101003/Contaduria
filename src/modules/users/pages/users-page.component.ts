@@ -12,6 +12,7 @@ import { getRoleName } from '../../../shared/utils/role.utils';
 import { validateUser, createEmptyUser } from '../../../shared/utils/user.utils';
 import { fileToBase64 } from '../../../shared/utils/file.utils';
 import { showConfirmDialog, showSuccessAlert, showErrorAlert } from '../../../shared/utils/alerts';
+import { initFeatherIcons } from '../../../shared/utils/icon.utils';
 
 @Component({
   selector: 'app-users-page',
@@ -44,7 +45,7 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
 
     effect(() => {
       this.userStore.users();
-      setTimeout(() => (globalThis as any).feather?.replace(), 0);
+      initFeatherIcons();
     });
   }
 
@@ -53,7 +54,7 @@ export class UsersPageComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    (globalThis as any).feather?.replace();
+    initFeatherIcons();
   }
 
   async deleteUser(id: number): Promise<void> {

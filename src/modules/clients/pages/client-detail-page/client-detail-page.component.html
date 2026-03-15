@@ -1,21 +1,22 @@
 <div class="detail-container">
 
-  @if (loading) {
+  @if (loading()) {
     <div class="loading-state">
       <div class="loading-spinner">
         <i class="fas fa-circle-notch fa-spin"></i>
       </div>
-      <span>Cargando información del usuario...</span>
+      <span>Cargando información del cliente...</span>
     </div>
   }
 
-  @if (!loading && !user) {
+ 
+  @if (error()) {
     <div class="error-state">
       <div class="error-icon">
         <i class="fas fa-exclamation-triangle"></i>
       </div>
-      <h3>Usuario no encontrado</h3>
-      <span>El usuario que buscas no existe o ha sido eliminado</span>
+      <h3>Error al cargar</h3>
+      <span>{{ error() }}</span>
       <button class="btn-retry" (click)="goBack()">
         <i class="fas fa-arrow-left"></i>
         Volver a la lista
@@ -23,36 +24,33 @@
     </div>
   }
 
-  @if (!loading && user) {
-    <!-- Hero Header -->
+ 
+  @if (client(); as clientData) {
+   
     <div class="hero-header">
       <div class="hero-banner"></div>
       <div class="hero-content">
         <div class="hero-profile">
           <div class="profile-avatar">
-            @if (user.profilePhoto) {
-              <img [src]="user.profilePhoto" [alt]="user.firstName + ' ' + user.lastName">
+            @if (clientData.profilePhoto) {
+              <img [src]="clientData.profilePhoto" [alt]="clientData.fistName + ' ' + clientData.lastName">
             } @else {
               <div class="avatar-placeholder">
-                <span>{{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}</span>
+                <span>{{ clientData.fistName.charAt(0) }}{{ clientData.lastName.charAt(0) }}</span>
               </div>
             }
-            <div class="avatar-status" [class.active]="!user.isDeleted"></div>
+            <div class="avatar-status" [class.active]="!clientData.isDeleted"></div>
           </div>
           <div class="hero-info">
-            <h1 class="user-name">{{ user.firstName }} {{ user.lastName }}</h1>
-            <div class="user-meta">
+            <h1 class="client-name">{{ clientData.fistName }} {{ clientData.lastName }}</h1>
+            <div class="client-meta">
               <span class="meta-badge">
                 <i class="fas fa-hashtag"></i>
-                Usuario #{{ user.id }}
+                Cliente #{{ clientData.id }}
               </span>
-              <span class="meta-badge role-badge">
-                <i class="fas fa-user-shield"></i>
-                {{ getRoleName(user.roleId) }}
-              </span>
-              <span class="meta-badge" [class.badge-active]="!user.isDeleted" [class.badge-inactive]="user.isDeleted">
+              <span class="meta-badge" [class.badge-active]="!clientData.isDeleted" [class.badge-inactive]="clientData.isDeleted">
                 <i class="fas fa-circle"></i>
-                {{ user.isDeleted ? 'Inactivo' : 'Activo' }}
+                {{ clientData.isDeleted ? 'Inactivo' : 'Activo' }}
               </span>
             </div>
           </div>
@@ -62,7 +60,7 @@
             <i class="fas fa-arrow-left"></i>
             <span>Volver</span>
           </button>
-          <button class="btn-primary" (click)="editUser()">
+          <button class="btn-primary" (click)="editClient()">
             <i class="fas fa-pen"></i>
             <span>Editar</span>
           </button>
@@ -73,15 +71,15 @@
       </div>
     </div>
 
-    <!-- Stats Section -->
+ 
     <div class="stats-section">
       <div class="stat-card">
         <div class="stat-icon blue">
-          <i class="fas fa-tasks"></i>
+          <i class="fas fa-file-alt"></i>
         </div>
         <div class="stat-info">
-          <span class="stat-value">{{ stats.totalTasks }}</span>
-          <span class="stat-label">Tareas Asignadas</span>
+          <span class="stat-value">{{ stats.totalFormalities }}</span>
+          <span class="stat-label">Trámites Totales</span>
         </div>
       </div>
       <div class="stat-card">
@@ -89,8 +87,8 @@
           <i class="fas fa-check-circle"></i>
         </div>
         <div class="stat-info">
-          <span class="stat-value">{{ stats.completedTasks }}</span>
-          <span class="stat-label">Completadas</span>
+          <span class="stat-value">{{ stats.completedFormalities }}</span>
+          <span class="stat-label">Completados</span>
         </div>
       </div>
       <div class="stat-card">
@@ -98,8 +96,8 @@
           <i class="fas fa-clock"></i>
         </div>
         <div class="stat-info">
-          <span class="stat-value">{{ stats.pendingTasks }}</span>
-          <span class="stat-label">Pendientes</span>
+          <span class="stat-value">{{ stats.pendingFormalities }}</span>
+          <span class="stat-label">En Proceso</span>
         </div>
       </div>
       <div class="stat-card">
@@ -108,16 +106,16 @@
         </div>
         <div class="stat-info">
           <span class="stat-value">{{ stats.memberSince }}</span>
-          <span class="stat-label">Miembro Desde</span>
+          <span class="stat-label">Cliente Desde</span>
         </div>
       </div>
     </div>
 
-    <!-- Main Content -->
+  
     <div class="main-content">
-      <!-- Left Column -->
+   
       <div class="content-left">
-        <!-- Contact Information -->
+     
         <div class="info-section">
           <div class="section-header">
             <h2>
@@ -133,7 +131,7 @@
               <div class="info-data">
                 <span class="data-label">Correo Electrónico</span>
                 <span class="data-value">
-                  <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                  <a href="mailto:{{ clientData.email }}">{{ clientData.email }}</a>
                 </span>
               </div>
               <button class="btn-icon" title="Copiar">
@@ -147,7 +145,7 @@
               <div class="info-data">
                 <span class="data-label">Teléfono</span>
                 <span class="data-value">
-                  <a href="tel:{{ user.phone }}">{{ user.phone }}</a>
+                  <a href="tel:{{ clientData.phone }}">{{ clientData.phone }}</a>
                 </span>
               </div>
               <button class="btn-icon" title="Llamar">
@@ -156,69 +154,52 @@
             </div>
             <div class="info-row">
               <div class="info-icon-sm">
-                <i class="fas fa-map-marker-alt"></i>
-              </div>
-              <div class="info-data">
-                <span class="data-label">Dirección</span>
-                <span class="data-value">{{ user.address || 'No especificada' }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Personal Information -->
-        <div class="info-section">
-          <div class="section-header">
-            <h2>
-              <i class="fas fa-user"></i>
-              Información Personal
-            </h2>
-          </div>
-          <div class="info-list">
-            <div class="info-row">
-              <div class="info-icon-sm">
                 <i class="fas fa-id-card"></i>
               </div>
               <div class="info-data">
                 <span class="data-label">Cédula de Identidad</span>
-                <span class="data-value">{{ user.idCard }}</span>
+                <span class="data-value">{{ clientData.idCard }}</span>
               </div>
             </div>
             <div class="info-row">
               <div class="info-icon-sm">
-                <i class="fas fa-user-tag"></i>
+                <i class="fas fa-map-marker-alt"></i>
               </div>
               <div class="info-data">
-                <span class="data-label">Nombre Completo</span>
-                <span class="data-value">{{ user.firstName }} {{ user.lastName }}</span>
+                <span class="data-label">Dirección</span>
+                <span class="data-value">{{ clientData.address || 'No especificada' }}</span>
               </div>
+              @if (clientData.address) {
+                <button class="btn-icon" title="Ver en mapa">
+                  <i class="fas fa-external-link-alt"></i>
+                </button>
+              }
             </div>
+          </div>
+        </div>
+
+  
+        <div class="info-section">
+          <div class="section-header">
+            <h2>
+              <i class="fas fa-sticky-note"></i>
+              Notas
+            </h2>
+            <button class="btn-add">
+              <i class="fas fa-plus"></i>
+              Agregar
+            </button>
+          </div>
+          <div class="notes-empty">
+            <i class="fas fa-comment-slash"></i>
+            <span>No hay notas para este cliente</span>
           </div>
         </div>
       </div>
 
-      <!-- Right Column -->
+   
       <div class="content-right">
-        <!-- Role & Permissions -->
-        <div class="info-section">
-          <div class="section-header">
-            <h2>
-              <i class="fas fa-shield-alt"></i>
-              Rol y Permisos
-            </h2>
-          </div>
-          <div class="role-display">
-            <div class="role-icon-lg">
-              <i class="fas fa-user-shield"></i>
-            </div>
-            <div class="role-info">
-              <h4>{{ getRoleName(user.roleId) }}</h4>
-              <p>Rol asignado al usuario</p>
-            </div>
-          </div>
-        </div>
 
-        <!-- Recent Activity -->
         <div class="info-section">
           <div class="section-header">
             <h2>
@@ -233,17 +214,18 @@
                 <i class="fas fa-user-plus"></i>
               </div>
               <div class="timeline-content">
-                <span class="timeline-title">Usuario registrado</span>
+                <span class="timeline-title">Cliente registrado</span>
                 <span class="timeline-date">Hace 3 meses</span>
               </div>
             </div>
             <div class="timeline-item">
               <div class="timeline-icon blue">
-                <i class="fas fa-sign-in-alt"></i>
+                <i class="fas fa-file-alt"></i>
               </div>
               <div class="timeline-content">
-                <span class="timeline-title">Último inicio de sesión</span>
-                <span class="timeline-date">Hace 2 horas</span>
+                <span class="timeline-title">Trámite creado</span>
+                <span class="timeline-desc">Declaración de renta 2025</span>
+                <span class="timeline-date">Hace 2 meses</span>
               </div>
             </div>
             <div class="timeline-item">
@@ -251,14 +233,14 @@
                 <i class="fas fa-edit"></i>
               </div>
               <div class="timeline-content">
-                <span class="timeline-title">Perfil actualizado</span>
-                <span class="timeline-date">Hace 1 semana</span>
+                <span class="timeline-title">Información actualizada</span>
+                <span class="timeline-date">Hace 1 mes</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Quick Actions -->
+    
         <div class="info-section">
           <div class="section-header">
             <h2>
@@ -267,21 +249,21 @@
             </h2>
           </div>
           <div class="quick-actions">
-            <button class="action-btn" (click)="editUser()">
-              <i class="fas fa-pen"></i>
-              Editar Usuario
+            <button class="action-btn">
+              <i class="fas fa-file-medical"></i>
+              <span>Nuevo Trámite</span>
             </button>
             <button class="action-btn">
-              <i class="fas fa-key"></i>
-              Cambiar Contraseña
+              <i class="fas fa-envelope"></i>
+              <span>Enviar Correo</span>
             </button>
             <button class="action-btn">
-              <i class="fas fa-user-cog"></i>
-              Gestionar Rol
+              <i class="fas fa-file-invoice"></i>
+              <span>Generar Reporte</span>
             </button>
             <button class="action-btn danger">
               <i class="fas fa-user-slash"></i>
-              Desactivar
+              <span>Desactivar</span>
             </button>
           </div>
         </div>

@@ -17,6 +17,13 @@ export class UserProfileComponent implements OnInit {
   user: User | null = null;
   loading: boolean = false;
 
+  stats = {
+    totalTasks: 12,
+    completedTasks: 8,
+    pendingTasks: 4,
+    memberSince: '2025'
+  };
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,

@@ -18,6 +18,11 @@ export class HeaderComponent {
     this.router.navigate(['/login']);
   }
 
+  goToClientLogin(): void {
+    this.router.navigate(['/client/login']);
+    this.isMenuOpen = false;
+  }
+
   goToServices(): void {
     this.router.navigate(['/servicios']);
     this.isMenuOpen = false;

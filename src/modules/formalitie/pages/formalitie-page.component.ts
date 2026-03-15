@@ -12,7 +12,7 @@ import {
   TableAction,
 } from '../../../shared/components/data-table/data-table.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
-import { createEmptyFormalitie } from '../../../shared/utils/formalitie.utils';
+import { createEmptyFormalitie, getStateClass } from '../../../shared/utils/formalitie.utils';
 
 @Component({
   selector: 'app-formalities-page',
@@ -93,20 +93,7 @@ export class FormalitiesPageComponent implements OnInit {
     this.formalitieStore.loadFormalities();
   }
 
-  getStateClass(state: string): string {
-    switch (state) {
-      case 'PENDING':
-        return 'state-pending';
-      case 'IN_PROGRESS':
-        return 'state-progress';
-      case 'COMPLETED':
-        return 'state-completed';
-      case 'REFUSED':
-        return 'state-refused';
-      default:
-        return '';
-    }
-  }
+  getStateClass = getStateClass;
 
   viewFormalitie(formalitie: Formalitie): void {
     this.selectedFormalitie = formalitie;
