@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import {Observable, of,  delay } from "rxjs";
 import { Client, CreateClientDto, UpdateClientDto } from "../models/clients";
+import API_URL from "@shared/utils/api.url";
+import { mapClientToApi } from "../mapper/client.api.mapper";
 
 
 @Injectable({
@@ -75,7 +77,7 @@ export class ClientService {
         const client = this.mockClients.find(c => c.id === id);
         return of(client!).pipe(delay(300));
     }
-    createClient(clientData: CreateClientDto): Observable<Client> {
+    async createClient(clientData: CreateClientDto): Promise<Observable<Client>> {
         const newClient: Client = {
             id: this.nextId++,
             ...clientData,
@@ -83,7 +85,25 @@ export class ClientService {
             isDeleted: false
         };
         this.mockClients.push(newClient);
-        return of(newClient).pipe(delay(300));
+
+        const url = `${API_URL}clients`;
+
+        const payload = {
+            ...mapClientToApi(newClient),
+            profilePhoto: newClient.profilePhoto,
+        };
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const createdClient = await response.json();
+
+        return of(createdClient).pipe(delay(300));
     }
     updateClient(id: number, clientData: UpdateClientDto): Observable<Client> {
         const clientIndex = this.mockClients.findIndex(c => c.id === id);

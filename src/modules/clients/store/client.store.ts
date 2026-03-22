@@ -62,9 +62,9 @@ export class ClientStore {
         });
     }
 
-    createClient(clientData: CreateClientDto): Observable<Client | null> {
+    async createClient(clientData: CreateClientDto): Promise<Observable<Client | null>> {
         this.updateState({ loading: true, error: null });
-        return this.clientService.createClient(clientData).pipe(
+        return (await this.clientService.createClient(clientData)).pipe(
             tap((newClient) => {
                 const updatedClients = [...this.state().clients, newClient];
                 this.updateState({ clients: updatedClients, loading: false });
