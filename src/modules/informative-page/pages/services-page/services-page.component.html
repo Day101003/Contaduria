@@ -1,6 +1,5 @@
 <app-header />
 
-
 <section class="page-header">
   <div class="page-header-overlay"></div>
   <div class="page-header-content">
@@ -13,42 +12,32 @@
   </div>
 </section>
 
-
 <section class="services-intro">
   <div class="container">
     <div class="intro-content">
       <h4 class="section-subtitle">Lo Que Ofrecemos</h4>
       <h2 class="section-title">Servicios Contables y Fiscales Profesionales</h2>
       <p class="section-description">
-        Brindamos soluciones integrales para empresas y personas físicas. Nuestro equipo de expertos 
+        Brindamos soluciones integrales para empresas y personas físicas. Nuestro equipo de expertos
         está comprometido con brindarte un servicio de calidad, personalizado y enfocado en tus necesidades específicas.
       </p>
     </div>
   </div>
 </section>
 
-
 <section class="services-detail">
   <div class="container">
-    @for (service of services; track service.title; let i = $index) {
+    @for (service of services; track service.id; let i = $index) {
       <div class="service-detail-card" [class.reverse]="i % 2 !== 0">
         <div class="service-detail-icon">
           <div class="icon-wrapper">
-            <i class="fas {{ service.icon }}"></i>
+            <i class="fas fa-briefcase"></i>
           </div>
-          <div class="service-number">0{{ i + 1 }}</div>
+          <div class="service-number">{{ i + 1 < 10 ? '0' + (i + 1) : i + 1 }}</div>
         </div>
         <div class="service-detail-content">
-          <h3 class="service-detail-title">{{ service.title }}</h3>
+          <h3 class="service-detail-title">{{ service.name }}</h3>
           <p class="service-detail-description">{{ service.description }}</p>
-          <ul class="service-features-list">
-            @for (feature of service.features; track feature) {
-              <li>
-                <i class="fas fa-check"></i>
-                {{ feature }}
-              </li>
-            }
-          </ul>
           <button class="btn-service" routerLink="/" fragment="contact">
             Solicitar Servicio
             <i class="fas fa-arrow-right"></i>
@@ -58,7 +47,6 @@
     }
   </div>
 </section>
-
 
 <section id="contact-cta" class="cta-section">
   <div class="cta-overlay"></div>

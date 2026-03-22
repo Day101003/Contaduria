@@ -131,15 +131,15 @@
   .service-detail-card {
     grid-template-columns: 300px 1fr;
   }
-  
+
   .service-detail-card.reverse {
     grid-template-columns: 1fr 300px;
   }
-  
+
   .service-detail-card.reverse .service-detail-icon {
     order: 2;
   }
-  
+
   .service-detail-card.reverse .service-detail-content {
     order: 1;
   }
@@ -369,41 +369,41 @@
   .page-header {
     height: 280px;
   }
-  
+
   .page-header h1 {
     font-size: 36px;
   }
-  
+
   .service-detail-icon {
     min-height: 200px;
     padding: 40px 30px;
   }
-  
+
   .icon-wrapper {
     width: 90px;
     height: 90px;
   }
-  
+
   .icon-wrapper i {
     font-size: 36px;
   }
-  
+
   .service-number {
     font-size: 48px;
   }
-  
+
   .service-detail-content {
     padding: 30px;
   }
-  
+
   .service-detail-title {
     font-size: 24px;
   }
-  
+
   .cta-content h2 {
     font-size: 32px;
   }
-  
+
   .btn-cta-primary,
   .btn-cta-secondary {
     width: 100%;
