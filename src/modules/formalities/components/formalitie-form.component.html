@@ -1,0 +1,114 @@
+<div class="side-panel" [class.open]="isOpen">
+  <div class="side-panel-overlay" (click)="onClose()"></div>
+
+  <div class="side-panel-content">
+    <div class="side-panel-header">
+      <h3>{{ isEditMode ? 'Editar Formalitie' : 'Crear Nueva Formalitie' }}</h3>
+      <button class="btn-close-panel" (click)="onClose()">
+        ✕
+      </button>
+    </div>
+
+    <form class="formalitie-form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label>Imagen</label>
+
+        <div class="photo-upload-container">
+          @if (formalitie.image) {
+            <div class="photo-preview">
+              <img [src]="formalitie.image" alt="Preview">
+              <button
+                type="button"
+                class="btn-remove-photo"
+                (click)="onRemovePhoto()"
+                title="Eliminar imagen">
+                ✕
+              </button>
+            </div>
+          } @else {
+            <div class="photo-placeholder">
+              <p>Sin imagen</p>
+            </div>
+          }
+        </div>
+
+        <div class="file-input-wrapper">
+          <input
+            type="file"
+            id="imageInput"
+            class="file-input"
+            (change)="onFileSelected($event)"
+            accept="image/*">
+
+          <label for="imageInput" class="btn-upload">
+            Seleccionar imagen
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Título <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="formalitie.title"
+          name="title"
+          placeholder="Ingrese el título"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label>Descripción <span class="required">*</span></label>
+        <textarea
+          class="form-control"
+          [(ngModel)]="formalitie.description"
+          name="description"
+          placeholder="Ingrese la descripción"
+          rows="3"
+          required>
+        </textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Categoría <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="formalitie.category"
+          name="category"
+          placeholder="Ingrese la categoría"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label>Fecha <span class="required">*</span></label>
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="formalitie.date"
+          name="date"
+          required>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label>
+          <input
+            type="checkbox"
+            [(ngModel)]="formalitie.active"
+            name="active">
+          Activo
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="onClose()">
+          Cancelar
+        </button>
+
+        <button type="submit" class="btn-submit">
+          {{ isEditMode ? 'Guardar Cambios' : 'Crear Formalitie' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

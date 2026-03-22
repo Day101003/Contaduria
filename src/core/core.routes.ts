@@ -53,20 +53,18 @@ export const CORE_ROUTES: Routes = [
         import('../modules/clients/clients.routes')
           .then(m => m.clientsRoutes)
     },
-
-   
     {
-      path: 'reportes',
+      path: 'reports',
       loadChildren: () =>
         import('../modules/reports/report.routes')
           .then(m => m.REPORTS_ROUTES)
-    }, 
+    },
     {
       path: 'formalities',
       loadChildren: () =>
-        import('../modules/formalitie/formalitie.routes')
+        import('../modules/formalities/formalitie.routes')
           .then(m => m.FORMALITIES_ROUTES)
-    }, 
+    },
     {
       path: 'services',
       loadChildren: () =>

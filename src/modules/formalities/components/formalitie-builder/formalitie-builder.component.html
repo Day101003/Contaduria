@@ -1,0 +1,113 @@
+<div class="formalitie-builder">
+  <!-- Header -->
+  <div class="builder-header">
+    <div class="formalitie-info">
+      <input
+        type="text"
+        class="formalitie-name-input"
+        [(ngModel)]="formalitieName"
+        placeholder="Nombre de la formalitie"
+      />
+      <textarea
+        class="formalitie-description-input"
+        [(ngModel)]="formalitieDescription"
+        placeholder="Descripción de la formalitie (opcional)"
+        rows="2"
+      ></textarea>
+    </div>
+  </div>
+
+  <!-- Fields List -->
+  <div class="fields-section">
+    <div class="section-header">
+      <h3>Campos del formulario</h3>
+      <button type="button" class="btn btn-primary btn-sm" (click)="openFieldTypeSelector()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Agregar campo
+      </button>
+    </div>
+
+    <!-- Fields Container -->
+    <div class="fields-list">
+      <div
+        *ngFor="let field of paginatedFields; let i = index"
+        class="field-item"
+      >
+
+        <!-- Reorder -->
+        <div class="field-order-controls">
+          <button
+            type="button"
+            class="order-btn"
+            (click)="moveFieldUp(getRealIndex(i))"
+            [disabled]="getRealIndex(i) === 0"
+          >
+            ▲
+          </button>
+
+          <span class="order-number">{{ getRealIndex(i) + 1 }}</span>
+
+          <button
+            type="button"
+            class="order-btn"
+            (click)="moveFieldDown(getRealIndex(i))"
+            [disabled]="getRealIndex(i) === fields.length - 1"
+          >
+            ▼
+          </button>
+        </div>
+
+        <div class="field-type-badge">
+          <span>{{ getFieldTypeLabel(field.type) }}</span>
+        </div>
+
+        <div class="field-info">
+          <span class="field-label">{{ field.label }}</span>
+          <span *ngIf="field.validation?.required" class="required-badge">Requerido</span>
+        </div>
+
+        <div class="field-actions">
+          <button type="button" class="action-btn" (click)="openFieldEditor(field)">
+            Editar
+          </button>
+
+          <button type="button" class="action-btn" (click)="duplicateField(field)">
+            Duplicar
+          </button>
+
+          <button type="button" class="action-btn action-btn-danger" (click)="deleteField(field)">
+            Eliminar
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="showPagination" class="pagination-container">
+      <app-pagination [pagination]="pagination"></app-pagination>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="fields.length === 0" class="empty-state">
+      <p>No hay campos configurados</p>
+      <button type="button" class="btn btn-primary" (click)="openFieldTypeSelector()">
+        Agregar primer campo
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="builder-footer">
+    <button type="button" class="btn btn-secondary" (click)="onCancel()">
+      Cancelar
+    </button>
+
+    <button type="button" class="btn btn-primary" (click)="onSaveFormalitie()">
+      Guardar formalitie
+    </button>
+  </div>
+</div>
