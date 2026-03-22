@@ -22,6 +22,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/shared/assets",
+                "output": "assets/shared"
               }
             ],
             "styles": [
@@ -80,6 +85,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/shared/assets",
+                "output": "assets/shared"
               }
             ],
             "styles": [

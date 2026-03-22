@@ -1,0 +1,146 @@
+<div class="edit-container">
+
+  <div class="edit-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      Volver
+    </button>
+    <h1 class="title">Editar Cliente</h1>
+  </div>
+
+
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fas fa-spinner fa-spin"></i>
+      <span>Cargando información...</span>
+    </div>
+  }
+
+
+  @if (error()) {
+    <div class="error-state">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ error() }}</span>
+      <button class="btn-retry" (click)="goBack()">Volver</button>
+    </div>
+  }
+
+
+  @if (client(); as clientData) {
+    <div class="edit-content">
+      <form class="edit-form" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="fistName" class="form-label">
+              <i class="fas fa-user"></i>
+              Nombre
+            </label>
+            <input
+              type="text"
+              id="fistName"
+              class="form-input"
+              [(ngModel)]="formData.fistName"
+              name="fistName"
+              required
+              placeholder="Ingrese el nombre"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="lastName" class="form-label">
+              <i class="fas fa-user"></i>
+              Apellido
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              class="form-input"
+              [(ngModel)]="formData.lastName"
+              name="lastName"
+              required
+              placeholder="Ingrese el apellido"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="email" class="form-label">
+              <i class="fas fa-envelope"></i>
+              Correo Electrónico
+            </label>
+            <input
+              type="email"
+              id="email"
+              class="form-input"
+              [(ngModel)]="formData.email"
+              name="email"
+              required
+              placeholder="correo@ejemplo.com"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="phone" class="form-label">
+              <i class="fas fa-phone"></i>
+              Teléfono
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              class="form-input"
+              [(ngModel)]="formData.phone"
+              name="phone"
+              required
+              placeholder="Ingrese el teléfono"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="idCard" class="form-label">
+              <i class="fas fa-id-card"></i>
+              Cédula
+            </label>
+            <input
+              type="text"
+              id="idCard"
+              class="form-input"
+              [(ngModel)]="formData.idCard"
+              name="idCard"
+              required
+              placeholder="Ingrese la cédula"
+            >
+          </div>
+
+          <div class="form-group full-width">
+            <label for="address" class="form-label">
+              <i class="fas fa-map-marker-alt"></i>
+              Dirección
+            </label>
+            <input
+              type="text"
+              id="address"
+              class="form-input"
+              [(ngModel)]="formData.address"
+              name="address"
+              placeholder="Ingrese la dirección"
+            >
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="goBack()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-save" [disabled]="saving()">
+            @if (saving()) {
+              <i class="fas fa-spinner fa-spin"></i>
+              Guardando...
+            } @else {
+              <i class="fas fa-save"></i>
+              Guardar Cambios
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

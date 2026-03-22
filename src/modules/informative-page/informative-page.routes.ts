@@ -15,4 +15,18 @@ export const INFORMATIVE_PAGE_ROUTES: Routes = [
         (m) => m.ServicesPageComponent
       ),
   },
+  {
+    path: 'servicios/:serviceId/solicitar',
+    loadComponent: () =>
+      import('./pages/service-request-page/service-request-page.component').then(
+        (m) => m.ServiceRequestPageComponent
+      ),
+  },
+  {
+    path: 'solicitudes',
+    loadComponent: () =>
+      import('./pages/service-submissions-page/service-submissions-page.component').then(
+        (m) => m.ServiceSubmissionsPageComponent
+      ),
+  },
 ];

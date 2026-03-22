@@ -54,7 +54,7 @@ export class DataTableComponent<T = any> {
   filteredData = computed(() => {
     let result = this._data();
     
-    // Aplicar búsqueda
+   
     const search = this.searchTerm().toLowerCase();
     if (search) {
       result = result.filter(item => 

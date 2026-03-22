@@ -38,10 +38,29 @@
     </div>
     
     
-    <a routerLink="/servicios" routerLinkActive="bg-yellow-50 font-semibold text-[#1e3a5f]" class="flex items-center px-4 py-3 mb-2 text-[#1e3a5f] text-base font-medium hover:bg-yellow-50 rounded-lg transition-all group">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-3 text-[#2c5282] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-      <span>Servicios & Trámites</span>
-    </a>
+    <div class="mb-3">
+      <button class="w-full flex items-center justify-between px-4 py-3 text-[#1e3a5f] text-base font-medium hover:bg-yellow-50 rounded-lg transition-all" onclick="document.getElementById('collapseServiciosTramites').classList.toggle('hidden')">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-3 text-[#2c5282]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+          <span>Servicios & Trámites</span>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#2c5282]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div id="collapseServiciosTramites" class="hidden mt-2 space-y-1">
+        <a routerLink="/admin/services" routerLinkActive="bg-yellow-50 font-semibold text-[#1e3a5f]" [routerLinkActiveOptions]="{exact: true}" class="flex items-center pl-12 pr-4 py-3 text-gray-700 text-sm hover:bg-yellow-50 rounded-lg transition-all group">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-3 text-[#2c5282] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+          <span>Servicios</span>
+        </a>
+        <a routerLink="/admin/formalities" routerLinkActive="bg-yellow-50 font-semibold text-[#1e3a5f]" [routerLinkActiveOptions]="{exact: true}" class="flex items-center pl-12 pr-4 py-3 text-gray-700 text-sm hover:bg-yellow-50 rounded-lg transition-all group">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-3 text-[#2c5282] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          <span>Trámites</span>
+        </a>
+        <a routerLink="/admin/formalities/templates" routerLinkActive="bg-yellow-50 font-semibold text-[#1e3a5f]" class="flex items-center pl-12 pr-4 py-3 text-gray-700 text-sm hover:bg-yellow-50 rounded-lg transition-all group">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-3 text-[#2c5282] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+          <span>Plantillas de Trámites</span>
+        </a>
+      </div>
+    </div>
 
     <div class="mb-3">
       <button class="w-full flex items-center justify-between px-4 py-3 text-[#1e3a5f] text-base font-medium hover:bg-yellow-50 rounded-lg transition-all" onclick="document.getElementById('collapseReportes').classList.toggle('hidden')">
@@ -52,11 +71,11 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#2c5282]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </button>
       <div id="collapseReportes" class="hidden mt-2 space-y-1">
-        <a routerLink="/admin/reportes" routerLinkActive="bg-yellow-50 font-semibold text-[#1e3a5f]" [routerLinkActiveOptions]="{exact: true}" class="flex items-center pl-12 pr-4 py-3 text-gray-700 text-sm hover:bg-yellow-50 rounded-lg transition-all group">
+        <a routerLink="/admin/reports" routerLinkActive="bg-yellow-50 font-semibold text-[#1e3a5f]" [routerLinkActiveOptions]="{exact: true}" class="flex items-center pl-12 pr-4 py-3 text-gray-700 text-sm hover:bg-yellow-50 rounded-lg transition-all group">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-3 text-[#2c5282] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
           <span>Lista de Reportes</span>
         </a>
-        <a routerLink="/admin/reportes/templates" routerLinkActive="bg-yellow-50 font-semibold text-[#1e3a5f]" class="flex items-center pl-12 pr-4 py-3 text-gray-700 text-sm hover:bg-yellow-50 rounded-lg transition-all group">
+        <a routerLink="/admin/reports/templates" routerLinkActive="bg-yellow-50 font-semibold text-[#1e3a5f]" class="flex items-center pl-12 pr-4 py-3 text-gray-700 text-sm hover:bg-yellow-50 rounded-lg transition-all group">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-3 text-[#2c5282] group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
           <span>Plantillas de Reportes</span>
         </a>

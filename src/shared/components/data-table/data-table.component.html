@@ -123,10 +123,10 @@
         @for (item of filteredData(); track item) {
           <tr (click)="onRowClick(item)">
             @for (column of columns; track column.key) {
-              <td [class]="'cell-' + column.key">{{ getValue(item, column.key) }}</td>
+              <td [class]="'cell-' + column.key" [attr.data-label]="column.label">{{ getValue(item, column.key) }}</td>
             }
             @if (actions.length > 0) {
-              <td class="actions">
+              <td class="actions" data-label="Acciones">
                 @for (action of actions; track action.label) {
                   <button 
                     class="btn-action"

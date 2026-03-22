@@ -229,3 +229,32 @@ textarea.form-control {
   background: #fee2e2;
   color: #991b1b;
 }
+
+.service-card {
+  position: relative;
+}
+
+.btn-delete {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #fecaca;
+  color: #dc2626;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.report-card:hover .btn-delete {
+  opacity: 1;
+  pointer-events: auto;
+}

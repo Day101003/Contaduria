@@ -6,6 +6,7 @@ import { FormalitieBuilderComponent } from '../../components/formalitie-builder/
 import { DynamicFormRendererComponent } from '../../components/dynamic-form-renderer/dynamic-form-renderer.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { FormalitieTemplate, FormalitieField, CreateFormalitieFieldDto } from '../../models/field.model';
+import { showConfirmDialog, showErrorAlert, showSuccessAlert } from '../../../../shared/utils/alerts';
 
 type ViewMode = 'list' | 'create' | 'edit' | 'preview';
 
@@ -139,6 +140,7 @@ export class FormalitieTemplatesPageComponent implements OnInit {
           fields: data.fields,
           active: true
         });
+        showSuccessAlert('Plantilla actualizada', 'La plantilla se actualizó exitosamente.');
       } else {
         await this.templateStore.createTemplate({
           name: data.name,
@@ -146,10 +148,12 @@ export class FormalitieTemplatesPageComponent implements OnInit {
           fields: data.fields,
           active: true
         });
+        showSuccessAlert('Plantilla creada', 'La plantilla se creó exitosamente.');
       }
       this.showList();
     } catch (error) {
       console.error('Error saving template:', error);
+      showErrorAlert('Error', 'No se pudo guardar la plantilla.');
     }
   }
 
@@ -157,9 +161,18 @@ export class FormalitieTemplatesPageComponent implements OnInit {
     this.showList();
   }
 
-  deleteTemplate(template: FormalitieTemplate): void {
-    if (!confirm(`¿Eliminar la plantilla "${template.name}"?`)) return;
+  async deleteTemplate(template: FormalitieTemplate): Promise<void> {
+    const confirmed = await showConfirmDialog(
+      '¿Eliminar plantilla?',
+      `¿Está seguro de eliminar la plantilla "${template.name}"?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
     this.templateStore.deleteTemplate(template.id);
+    showSuccessAlert('Plantilla eliminada', 'La plantilla ha sido eliminada exitosamente.');
 
     setTimeout(() => {
       if (this.currentPage() > this.totalPages() && this.totalPages() > 0) {
@@ -175,7 +188,7 @@ export class FormalitieTemplatesPageComponent implements OnInit {
   }
 
   onPreviewSubmit(): void {
-    alert('Vista previa: Los datos no se enviarán');
+    showSuccessAlert('Vista previa', 'Los datos no se enviarán en modo vista previa.');
   }
 
   onPreviewCancel(): void {

@@ -14,6 +14,23 @@
 
   <!-- Filters -->
   <div class="filters-bar">
+    <div class="source-toggle" role="tablist" aria-label="Tipo de reporte">
+      <button
+        type="button"
+        class="source-btn"
+        [class.active]="reportSourceFilter() === 'fixed'"
+        (click)="onSourceFilterChange('fixed')">
+        Reportes Fijos
+      </button>
+      <button
+        type="button"
+        class="source-btn"
+        [class.active]="reportSourceFilter() === 'template'"
+        (click)="onSourceFilterChange('template')">
+        Reportes Plantilla
+      </button>
+    </div>
+
     <div class="search-box">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"></circle>
@@ -26,20 +43,24 @@
         (input)="onSearchChange($event)">
     </div>
     
-    <div class="filter-select">
-      <label>Estado:</label>
-      <select [value]="statusFilter()" (change)="onStatusFilterChange($event)">
-        <option value="all">Todos</option>
-        <option value="pendiente">Pendiente</option>
-        <option value="en_proceso">En Proceso</option>
-        <option value="completado">Completado</option>
-        <option value="rechazado">Rechazado</option>
-      </select>
-    </div>
+    @if (isTemplateSource()) {
+      <div class="filter-select">
+        <label>Estado:</label>
+        <select [value]="statusFilter()" (change)="onStatusFilterChange($event)">
+          <option value="all">Todos</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="en_proceso">En Proceso</option>
+          <option value="completado">Completado</option>
+          <option value="rechazado">Rechazado</option>
+        </select>
+      </div>
+    } @else {
+      <span class="fixed-note">Los reportes fijos no usan estado</span>
+    }
   </div>
 
   <!-- Loading State -->
-  @if (store.loading()) {
+  @if (loading()) {
     <div class="loading">
       <div class="spinner"></div>
       <p>Cargando reportes...</p>
@@ -47,12 +68,12 @@
   }
 
   <!-- Error State -->
-  @if (store.error()) {
-    <div class="error">{{ store.error() }}</div>
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
   }
 
   <!-- Empty State -->
-  @if (!store.loading() && filteredReports().length === 0) {
+  @if (!loading() && filteredReports().length === 0) {
     <div class="empty-state">
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -61,7 +82,7 @@
         <line x1="16" y1="17" x2="8" y2="17"></line>
         <polyline points="10 9 9 9 8 9"></polyline>
       </svg>
-      @if (searchTerm() || statusFilter() !== 'all') {
+      @if (searchTerm() || (isTemplateSource() && statusFilter() !== 'all')) {
         <h3>No se encontraron reportes</h3>
         <p>Intenta ajustar los filtros de búsqueda</p>
       } @else {
@@ -72,30 +93,36 @@
   }
 
   <!-- Reports Grid -->
-  @if (!store.loading() && paginatedReports().length > 0) {
+  @if (!loading() && paginatedReports().length > 0) {
     <div class="reports-grid">
       @for (report of paginatedReports(); track report.id) {
         <div class="report-card">
           <!-- Header -->
           <div class="card-header">
-            <h3>{{ report.templateName }}</h3>
-            <button
-              class="btn-delete"
-              (click)="deleteReport(report)"
-              title="Eliminar">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
+            <h3>{{ report.name }}</h3>
+            @if (report.source === 'template') {
+              <button
+                class="btn-delete"
+                (click)="deleteReport(report)"
+                title="Eliminar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            } @else {
+              <span class="origin-tag">Fijo</span>
+            }
           </div>
 
           <!-- Status badge -->
-          <div class="status-row">
-            <span class="status-badge" [class]="getStatusColor(report.status)">
-              {{ getStatusLabel(report.status) }}
-            </span>
-          </div>
+          @if (report.source === 'template' && report.status) {
+            <div class="status-row">
+              <span class="status-badge" [class]="getStatusColor(report.status)">
+                {{ getStatusLabel(report.status) }}
+              </span>
+            </div>
+          }
 
           <!-- Meta info -->
           <div class="report-meta">
@@ -117,24 +144,26 @@
           }
 
           <!-- Actions -->
-          <div class="card-actions">
-            <button class="btn-details" (click)="viewReport(report)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-              Detalle
-            </button>
+          @if (report.source === 'template') {
+            <div class="card-actions">
+              <button class="btn-details" (click)="viewReport(report)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                Detalle
+              </button>
 
-            <button class="btn-edit" (click)="editReport(report)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-              Editar
-            </button>
-          </div>
+              <button class="btn-edit" (click)="editReport(report)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Editar
+              </button>
+            </div>
+          }
         </div>
       }
     </div>

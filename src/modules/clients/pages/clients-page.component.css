@@ -19,8 +19,12 @@
 }
 
 
+.btn-view {
+  background-color: rgb(228, 178, 114);
+}
 
-/* Responsive */
+
+
 @media (max-width: 768px) {
   .clients-container {
     padding: 1rem;

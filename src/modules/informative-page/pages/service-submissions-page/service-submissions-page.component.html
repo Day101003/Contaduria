@@ -1,0 +1,82 @@
+<app-header />
+
+<section class="submissions-hero">
+  <div class="submissions-overlay"></div>
+  <div class="submissions-hero-content">
+   <br>
+   <br>
+    <h1>Solicitudes Enviadas</h1>
+    <p>Consulta el estado de los formularios que ya se han enviado.</p>
+    <nav class="breadcrumb">
+      <a routerLink="/">Inicio</a>
+      <span>/</span>
+      <span class="current">Solicitudes</span>
+    </nav>
+  </div>
+</section>
+
+<section class="submissions-section">
+  <div class="container">
+    @if (store.loading()) {
+      <div class="state-card loading">
+        <div class="spinner"></div>
+        <p>Cargando solicitudes...</p>
+      </div>
+    }
+
+    @if (store.error() && !store.loading()) {
+      <div class="state-card error">
+        <h3>No se pudieron cargar las solicitudes</h3>
+        <p>{{ store.error() }}</p>
+      </div>
+    }
+
+    @if (!store.loading() && !store.error() && store.formalities().length === 0) {
+      <div class="state-card empty">
+        <h3>Aún no hay solicitudes enviadas</h3>
+        <p>Cuando envíes un trámite, aparecerá aquí con su estado.</p>
+        <a class="btn-primary" routerLink="/servicios">Ir a servicios</a>
+      </div>
+    }
+
+    @if (!store.loading() && !store.error() && store.formalities().length > 0) {
+      <div class="summary-card">
+        <h2>Total de solicitudes: {{ store.formalities().length }}</h2>
+        <a class="btn-secondary" routerLink="/servicios">Solicitar otro servicio</a>
+      </div>
+
+      <div class="list-grid">
+        @for (item of store.formalities(); track item.id) {
+          <article class="submission-card">
+            <div class="card-header">
+              <h3>{{ item.templateName }}</h3>
+              <span class="status-badge" [style.backgroundColor]="getStatusColor(item.status)">
+                {{ getStatusLabel(item.status) }}
+              </span>
+            </div>
+
+            <dl class="details">
+              <div class="row">
+               
+              </div>
+              <div class="row">
+                <dt>Categoría</dt>
+                <dd>{{ item.category || 'General' }}</dd>
+              </div>
+              <div class="row">
+                <dt>Enviada</dt>
+                <dd>{{ formatDate(item.createdAt) }}</dd>
+              </div>
+              <div class="row">
+                <dt>Solicitante</dt>
+                <dd>{{ item.userName || 'No disponible' }}</dd>
+              </div>
+            </dl>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<app-footer />

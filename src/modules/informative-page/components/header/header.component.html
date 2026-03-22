@@ -34,11 +34,17 @@
         <li><a (click)="scrollTo('hero')" class="nav-link">Inicio</a></li>
         <li><a (click)="scrollTo('about')" class="nav-link">Nosotros</a></li>
         <li><a routerLink="/servicios" class="nav-link">Servicios</a></li>
+        <li><a routerLink="/solicitudes" class="nav-link">Solicitudes</a></li>
         <li><a (click)="scrollTo('team')" class="nav-link">Equipo</a></li>
         <li><a (click)="scrollTo('contact')" class="nav-link">Contacto</a></li>
       </ul>
 
  
+      <button class="btn-cta-secondary" (click)="goToClientLogin()">
+        <i class="fas fa-sign-in-alt"></i>
+        Iniciar Sesión
+      </button>
+
       <button class="btn-cta" (click)="goToAdmin()">
         <i class="fas fa-user"></i>
         Administrador
@@ -58,12 +64,19 @@
       <li><a (click)="scrollTo('hero')" class="mobile-nav-link">Inicio</a></li>
       <li><a (click)="scrollTo('about')" class="mobile-nav-link">Nosotros</a></li>
       <li><a (click)="goToServices()" class="mobile-nav-link">Servicios</a></li>
+      <li><a routerLink="/solicitudes" class="mobile-nav-link">Solicitudes</a></li>
       <li><a (click)="scrollTo('team')" class="mobile-nav-link">Equipo</a></li>
       <li><a (click)="scrollTo('contact')" class="mobile-nav-link">Contacto</a></li>
       <li>
+        <button class="btn-cta-mobile-secondary" (click)="goToClientLogin()">
+          <i class="fas fa-sign-in-alt"></i>
+          Iniciar Sesión
+        </button>
+      </li>
+      <li>
         <button class="btn-cta-mobile" (click)="goToAdmin()">
           <i class="fas fa-user"></i>
-          Acceso Clientes
+          Administrador
         </button>
       </li>
     </ul>

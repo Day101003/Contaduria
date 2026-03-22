@@ -10,6 +10,12 @@ export const CORE_ROUTES: Routes = [
       import('../modules/login/login.routes')
         .then(m => m.LOGIN_ROUTES)
   },
+  {
+    path: 'client',
+    loadChildren: () =>
+      import('../modules/login_clients/login_clients.routes')
+        .then(m => m.LOGIN_CLIENTS_ROUTES)
+  },
 {
   path: 'admin',
   component: AdminLayoutComponent,

@@ -7,9 +7,23 @@ import { GeneratedReportsStore } from '../store/generated-reports.store';
 import { GeneratedReport } from '../models/tramite.model';
 import { getStatusLabel, getStatusColor } from '../utils/status.utils';
 import { ReportTemplate } from '../models/field.model';
-import { usePagination } from '../../../shared/composables/usePagination';
 import { TemplateSelectorComponent } from '../components/template-selector/template-selector.component';
 import { showConfirmDialog, showSuccessAlert, showErrorAlert } from '../../../shared/utils/alerts';
+import { formatDateTime } from '../../../shared/utils/date.utils';
+import { ReportService } from '../services/report.service';
+import { Report } from '../models/report';
+
+type ReportSourceFilter = 'fixed' | 'template';
+
+interface ReportListItem {
+  id: number;
+  name: string;
+  category?: string;
+  userName?: string;
+  status?: GeneratedReport['status'];
+  createdAt: string;
+  source: ReportSourceFilter;
+}
 
 @Component({
   selector: 'app-reports-page',
@@ -22,6 +36,11 @@ export class ReportsPageComponent implements OnInit, AfterViewInit {
   
   showTemplateSelector = false;
   
+  reportSourceFilter = signal<ReportSourceFilter>('fixed');
+  fixedReports = signal<Report[]>([]);
+  fixedLoading = signal(false);
+  fixedError = signal<string | null>(null);
+  
   
   statusFilter = signal<string>('all');
   searchTerm = signal<string>('');
@@ -30,18 +49,50 @@ export class ReportsPageComponent implements OnInit, AfterViewInit {
   readonly ITEMS_PER_PAGE = 6;
   currentPage = signal(1);
 
+  isTemplateSource = computed(() => this.reportSourceFilter() === 'template');
+
+  sourceReports = computed<ReportListItem[]>(() => {
+    if (this.reportSourceFilter() === 'fixed') {
+      return this.fixedReports().map(report => ({
+        id: report.id,
+        name: report.title,
+        category: report.category,
+        createdAt: report.date,
+        source: 'fixed'
+      }));
+    }
+
+    return this.store.reports().map(report => ({
+      id: report.id,
+      name: report.templateName,
+      category: report.category,
+      userName: report.userName,
+      status: report.status,
+      createdAt: report.createdAt,
+      source: 'template'
+    }));
+  });
+
+  loading = computed(() =>
+    this.reportSourceFilter() === 'fixed' ? this.fixedLoading() : this.store.loading()
+  );
+
+  error = computed(() =>
+    this.reportSourceFilter() === 'fixed' ? this.fixedError() : this.store.error()
+  );
+
   filteredReports = computed(() => {
-    let reports = this.store.reports();
+    let reports = this.sourceReports();
     
     const status = this.statusFilter();
-    if (status !== 'all') {
+    if (this.reportSourceFilter() === 'template' && status !== 'all') {
       reports = reports.filter(r => r.status === status);
     }
     
     const search = this.searchTerm().toLowerCase().trim();
     if (search) {
       reports = reports.filter(r => 
-        r.templateName.toLowerCase().includes(search) ||
+        r.name.toLowerCase().includes(search) ||
         r.userName?.toLowerCase().includes(search) ||
         r.category?.toLowerCase().includes(search)
       );
@@ -74,7 +125,8 @@ export class ReportsPageComponent implements OnInit, AfterViewInit {
 
   constructor(
     readonly store: GeneratedReportsStore,
-    private router: Router
+    private router: Router,
+    private reportService: ReportService
   ) {
     
     effect(() => {
@@ -87,6 +139,7 @@ export class ReportsPageComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.store.loadReports();
     this.store.loadTemplates();
+    this.loadFixedReports();
   }
 
   ngAfterViewInit(): void {
@@ -115,6 +168,10 @@ export class ReportsPageComponent implements OnInit, AfterViewInit {
     this.showTemplateSelector = true;
   }
 
+  onSourceFilterChange(source: ReportSourceFilter): void {
+    this.reportSourceFilter.set(source);
+  }
+
   closeTemplateSelector(): void {
     this.showTemplateSelector = false;
   }
@@ -122,23 +179,35 @@ export class ReportsPageComponent implements OnInit, AfterViewInit {
   onTemplateSelected(template: ReportTemplate): void {
     this.showTemplateSelector = false;
     
-    this.router.navigate(['/admin/reportes/create'], { 
+    this.router.navigate(['/admin/reports/create'], {
       queryParams: { templateId: template.id } 
     });
   }
 
-  viewReport(report: GeneratedReport): void {
-    this.router.navigate(['/admin/reportes', report.id, 'detail']);
+  viewReport(report: ReportListItem): void {
+    if (report.source !== 'template') {
+      return;
+    }
+
+    this.router.navigate(['/admin/reports', report.id, 'detail']);
   }
 
-  editReport(report: GeneratedReport): void {
-    this.router.navigate(['/admin/reportes', report.id, 'edit']);
+  editReport(report: ReportListItem): void {
+    if (report.source !== 'template') {
+      return;
+    }
+
+    this.router.navigate(['/admin/reports', report.id, 'edit']);
   }
 
-  async deleteReport(report: GeneratedReport): Promise<void> {
+  async deleteReport(report: ReportListItem): Promise<void> {
+    if (report.source !== 'template') {
+      return;
+    }
+
     const confirmed = await showConfirmDialog(
       '¿Eliminar reporte?',
-      `¿Está seguro de eliminar el reporte "${report.templateName}"? Esta acción no se puede deshacer.`,
+      `¿Está seguro de eliminar el reporte "${report.name}"? Esta acción no se puede deshacer.`,
       'Eliminar',
       'Cancelar'
     );
@@ -163,18 +232,22 @@ export class ReportsPageComponent implements OnInit, AfterViewInit {
     this.searchTerm.set(input.value);
   }
 
-  formatDate(dateString: string): string {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch {
-      return dateString;
-    }
+  private loadFixedReports(): void {
+    this.fixedLoading.set(true);
+    this.fixedError.set(null);
+
+    this.reportService.getActiveReports().subscribe({
+      next: (reports) => {
+        this.fixedReports.set(reports);
+        this.fixedLoading.set(false);
+      },
+      error: (error) => {
+        this.fixedError.set('Error al cargar reportes fijos');
+        this.fixedLoading.set(false);
+        console.error('Error loading fixed reports:', error);
+      }
+    });
   }
+
+  formatDate = formatDateTime;
 }

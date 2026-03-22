@@ -8,6 +8,8 @@ import { usePagination } from '../../../shared/composables/usePagination';
 import { ServiceFormComponent } from '../components/service-form.component';
 
 import { validateService, createEmptyService } from '../../../shared/utils/service.utils';
+import { initFeatherIcons } from '../../../shared/utils/icon.utils';
+import { showConfirmDialog, showSuccessAlert, showErrorAlert } from '../../../shared/utils/alerts';
 
 @Component({
   selector: 'app-services-page',
@@ -35,7 +37,7 @@ export class ServicesPageComponent implements OnInit, AfterViewInit {
 
     effect(() => {
       this.serviceStore.services();
-      setTimeout(() => (globalThis as any).feather?.replace(), 0);
+      initFeatherIcons();
     });
   }
 
@@ -44,16 +46,34 @@ export class ServicesPageComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    (globalThis as any).feather?.replace();
+    initFeatherIcons();
   }
 
-  onDeactivate(service: Service): void {
+  async onDeactivate(service: Service): Promise<void> {
+    const confirmed = await showConfirmDialog(
+      '¿Eliminar servicio?',
+      `¿Está seguro de eliminar el servicio "${service.name}"?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
     const updatedService = {
       ...service,
       active: false,
     };
 
-    this.serviceStore.updateService(service.id, updatedService);
+    this.serviceStore.updateService(service.id, updatedService).subscribe({
+      next: (savedService) => {
+        if (savedService) {
+          showSuccessAlert('Servicio eliminado', 'El servicio ha sido eliminado exitosamente');
+        } else {
+          showErrorAlert('Error', 'No se pudo eliminar el servicio');
+        }
+      },
+      error: () => showErrorAlert('Error', 'No se pudo eliminar el servicio')
+    });
   }
 
   openCreateForm(): void {
@@ -62,6 +82,7 @@ export class ServicesPageComponent implements OnInit, AfterViewInit {
     this.newService = createEmptyService();
     this.showCreateForm = true;
   }
+  
 
   openEditForm(serviceId: number): void {
     const service = this.serviceStore.services().find((s) => s.id === serviceId);
@@ -89,14 +110,32 @@ export class ServicesPageComponent implements OnInit, AfterViewInit {
 
   saveService(): void {
     if (!validateService(this.newService)) {
-      alert('Please complete all required fields');
+      showErrorAlert('Campos incompletos', 'Por favor complete todos los campos requeridos.');
       return;
     }
 
     if (this.isEditMode && this.editingServiceId) {
-      this.serviceStore.updateService(this.editingServiceId, this.newService);
+      this.serviceStore.updateService(this.editingServiceId, this.newService).subscribe({
+        next: (service) => {
+          if (service) {
+            showSuccessAlert('Servicio actualizado', 'El servicio ha sido actualizado exitosamente');
+          } else {
+            showErrorAlert('Error', 'No se pudo actualizar el servicio');
+          }
+        },
+        error: () => showErrorAlert('Error', 'No se pudo actualizar el servicio')
+      });
     } else {
-      this.serviceStore.createService(this.newService);
+      this.serviceStore.createService(this.newService).subscribe({
+        next: (service) => {
+          if (service) {
+            showSuccessAlert('Servicio creado', 'El servicio ha sido creado exitosamente');
+          } else {
+            showErrorAlert('Error', 'No se pudo crear el servicio');
+          }
+        },
+        error: () => showErrorAlert('Error', 'No se pudo crear el servicio')
+      });
     }
 
     this.closeCreateForm();

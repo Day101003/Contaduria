@@ -1,0 +1,273 @@
+<div class="detail-container">
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="loading-spinner">
+        <i class="fas fa-circle-notch fa-spin"></i>
+      </div>
+      <span>Cargando información del cliente...</span>
+    </div>
+  }
+
+ 
+  @if (error()) {
+    <div class="error-state">
+      <div class="error-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3>Error al cargar</h3>
+      <span>{{ error() }}</span>
+      <button class="btn-retry" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i>
+        Volver a la lista
+      </button>
+    </div>
+  }
+
+ 
+  @if (client(); as clientData) {
+   
+    <div class="hero-header">
+      <div class="hero-banner"></div>
+      <div class="hero-content">
+        <div class="hero-profile">
+          <div class="profile-avatar">
+            @if (clientData.profilePhoto) {
+              <img [src]="clientData.profilePhoto" [alt]="clientData.fistName + ' ' + clientData.lastName">
+            } @else {
+              <div class="avatar-placeholder">
+                <span>{{ clientData.fistName.charAt(0) }}{{ clientData.lastName.charAt(0) }}</span>
+              </div>
+            }
+            <div class="avatar-status" [class.active]="!clientData.isDeleted"></div>
+          </div>
+          <div class="hero-info">
+            <h1 class="client-name">{{ clientData.fistName }} {{ clientData.lastName }}</h1>
+            <div class="client-meta">
+              <span class="meta-badge">
+                <i class="fas fa-hashtag"></i>
+                Cliente #{{ clientData.id }}
+              </span>
+              <span class="meta-badge" [class.badge-active]="!clientData.isDeleted" [class.badge-inactive]="clientData.isDeleted">
+                <i class="fas fa-circle"></i>
+                {{ clientData.isDeleted ? 'Inactivo' : 'Activo' }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-back" (click)="goBack()">
+            <i class="fas fa-arrow-left"></i>
+            <span>Volver</span>
+          </button>
+          <button class="btn-primary" (click)="editClient()">
+            <i class="fas fa-pen"></i>
+            <span>Editar</span>
+          </button>
+          <button class="btn-secondary">
+            <i class="fas fa-ellipsis-v"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+ 
+    <div class="stats-section">
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.totalFormalities }}</span>
+          <span class="stat-label">Trámites Totales</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.completedFormalities }}</span>
+          <span class="stat-label">Completados</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon yellow">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.pendingFormalities }}</span>
+          <span class="stat-label">En Proceso</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.memberSince }}</span>
+          <span class="stat-label">Cliente Desde</span>
+        </div>
+      </div>
+    </div>
+
+  
+    <div class="main-content">
+   
+      <div class="content-left">
+     
+        <div class="info-section">
+          <div class="section-header">
+            <h2>
+              <i class="fas fa-address-card"></i>
+              Información de Contacto
+            </h2>
+          </div>
+          <div class="info-list">
+            <div class="info-row">
+              <div class="info-icon-sm">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="info-data">
+                <span class="data-label">Correo Electrónico</span>
+                <span class="data-value">
+                  <a href="mailto:{{ clientData.email }}">{{ clientData.email }}</a>
+                </span>
+              </div>
+              <button class="btn-icon" title="Copiar">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+            <div class="info-row">
+              <div class="info-icon-sm">
+                <i class="fas fa-phone-alt"></i>
+              </div>
+              <div class="info-data">
+                <span class="data-label">Teléfono</span>
+                <span class="data-value">
+                  <a href="tel:{{ clientData.phone }}">{{ clientData.phone }}</a>
+                </span>
+              </div>
+              <button class="btn-icon" title="Llamar">
+                <i class="fas fa-phone"></i>
+              </button>
+            </div>
+            <div class="info-row">
+              <div class="info-icon-sm">
+                <i class="fas fa-id-card"></i>
+              </div>
+              <div class="info-data">
+                <span class="data-label">Cédula de Identidad</span>
+                <span class="data-value">{{ clientData.idCard }}</span>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon-sm">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div class="info-data">
+                <span class="data-label">Dirección</span>
+                <span class="data-value">{{ clientData.address || 'No especificada' }}</span>
+              </div>
+              @if (clientData.address) {
+                <button class="btn-icon" title="Ver en mapa">
+                  <i class="fas fa-external-link-alt"></i>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+  
+        <div class="info-section">
+          <div class="section-header">
+            <h2>
+              <i class="fas fa-sticky-note"></i>
+              Notas
+            </h2>
+            <button class="btn-add">
+              <i class="fas fa-plus"></i>
+              Agregar
+            </button>
+          </div>
+          <div class="notes-empty">
+            <i class="fas fa-comment-slash"></i>
+            <span>No hay notas para este cliente</span>
+          </div>
+        </div>
+      </div>
+
+   
+      <div class="content-right">
+
+        <div class="info-section">
+          <div class="section-header">
+            <h2>
+              <i class="fas fa-history"></i>
+              Actividad Reciente
+            </h2>
+            <a href="#" class="link-view-all">Ver todo</a>
+          </div>
+          <div class="activity-timeline">
+            <div class="timeline-item">
+              <div class="timeline-icon green">
+                <i class="fas fa-user-plus"></i>
+              </div>
+              <div class="timeline-content">
+                <span class="timeline-title">Cliente registrado</span>
+                <span class="timeline-date">Hace 3 meses</span>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-icon blue">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div class="timeline-content">
+                <span class="timeline-title">Trámite creado</span>
+                <span class="timeline-desc">Declaración de renta 2025</span>
+                <span class="timeline-date">Hace 2 meses</span>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-icon yellow">
+                <i class="fas fa-edit"></i>
+              </div>
+              <div class="timeline-content">
+                <span class="timeline-title">Información actualizada</span>
+                <span class="timeline-date">Hace 1 mes</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    
+        <div class="info-section">
+          <div class="section-header">
+            <h2>
+              <i class="fas fa-bolt"></i>
+              Acciones Rápidas
+            </h2>
+          </div>
+          <div class="quick-actions">
+            <button class="action-btn">
+              <i class="fas fa-file-medical"></i>
+              <span>Nuevo Trámite</span>
+            </button>
+            <button class="action-btn">
+              <i class="fas fa-envelope"></i>
+              <span>Enviar Correo</span>
+            </button>
+            <button class="action-btn">
+              <i class="fas fa-file-invoice"></i>
+              <span>Generar Reporte</span>
+            </button>
+            <button class="action-btn danger">
+              <i class="fas fa-user-slash"></i>
+              <span>Desactivar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
