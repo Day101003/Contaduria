@@ -1,6 +1,7 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { SidebarStateService } from '../../services/sidebar-state.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,11 +11,13 @@ import { RouterModule, Router } from '@angular/router';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements AfterViewInit {
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private sidebarStateService: SidebarStateService
+  ) {}
 
   toggleSidebar(): void {
-    const body = document.body;
-    body.classList.toggle('sidenav-toggled');
+    this.sidebarStateService.toggle();
   }
 
   viewProfile(): void {

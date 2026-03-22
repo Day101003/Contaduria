@@ -93,12 +93,24 @@
   color: #ef4444;
   border: none;
   border-radius: 3rem;
-  padding: 0.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+}
+
+.btn-delete svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.report-card:hover .btn-delete {
+  opacity: 1;
 }
 
 .btn-delete:hover {
@@ -106,6 +118,7 @@
   color: white;
   transform: scale(1.1);
 }
+
 
 .report-description {
   color: #64748b;

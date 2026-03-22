@@ -1,9 +1,13 @@
 <app-navbar></app-navbar>
 
 <div class="flex min-h-screen pt-16">
-  <app-sidebar></app-sidebar>
+  <app-sidebar [class.hidden]="sidebarStateService.isCollapsed()"></app-sidebar>
   
-  <div class="flex-1 ml-64">
+  <div
+    class="flex-1 transition-all duration-300"
+    [class.ml-64]="!sidebarStateService.isCollapsed()"
+    [class.ml-0]="sidebarStateService.isCollapsed()"
+  >
     <main class="p-6">
       <router-outlet></router-outlet>
     </main>

@@ -9,6 +9,7 @@ import {
   FieldValidation
 } from '../../models/field.model';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import { showConfirmDialog, showErrorAlert } from '../../../../shared/utils/alerts';
 
 interface FieldTypeOption {
   type: FieldType;
@@ -258,8 +259,15 @@ export class FormalitieBuilderComponent implements OnInit {
     this.closeFieldEditor();
   }
 
-  deleteField(field: FormalitieField): void {
-    if (!confirm(`¿Eliminar el campo "${field.label}"?`)) return;
+  async deleteField(field: FormalitieField): Promise<void> {
+    const confirmed = await showConfirmDialog(
+      '¿Eliminar campo?',
+      `¿Está seguro de eliminar el campo "${field.label}"?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
 
     const index = this.fields.findIndex(currentField => currentField.id === field.id);
 
@@ -341,7 +349,7 @@ export class FormalitieBuilderComponent implements OnInit {
 
   onSaveFormalitie(): void {
     if (!this.formalitieName.trim()) {
-      alert('Por favor ingresa un nombre para la formalitie');
+      showErrorAlert('Campo requerido', 'Por favor ingresa un nombre para la formalitie.');
       return;
     }
 

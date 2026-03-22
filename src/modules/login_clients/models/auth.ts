@@ -26,6 +26,9 @@ export interface ClientAuthResponse {
         idCard: string;
         address: string;
         profilePhoto?: string;
+        verificationCode?: string;
+        isVerified?: boolean;
+        verificationCodeExpiry?: string;
     };
     message?: string;
 }
@@ -38,5 +41,29 @@ export interface RegisterResponse {
         firstName: string;
         lastName: string;
         email: string;
+        verificationCode?: string;
+        isVerified?: boolean;
+    };
+}
+
+export interface VerifyCodeRequest {
+    email: string;
+    code: string;
+}
+
+export interface VerifyCodeResponse {
+    success: boolean;
+    message: string;
+    token?: string;
+    client?: {
+        id: number;
+        firstName: string;
+        lastName: string;
+        email: string;
+        phone: string;
+        idCard: string;
+        address: string;
+        profilePhoto?: string;
+        isVerified?: boolean;
     };
 }

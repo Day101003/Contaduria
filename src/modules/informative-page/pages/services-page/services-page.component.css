@@ -178,6 +178,12 @@
   color: #ffffff;
 }
 
+.icon-wrapper img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
 .service-number {
   font-size: 72px;
   font-weight: 700;

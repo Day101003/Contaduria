@@ -1,7 +1,7 @@
 import { Injectable, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { ClientAuthService } from "../service/client-auth.service";
-import { ClientLogin, CreateClientDto, ClientAuthResponse, RegisterResponse } from "../models/auth";
+import { ClientLogin, CreateClientDto, ClientAuthResponse, RegisterResponse, VerifyCodeRequest, VerifyCodeResponse } from "../models/auth";
 
 interface ClientAuthState {
     isAuthenticated: boolean;
@@ -14,10 +14,13 @@ interface ClientAuthState {
         idCard: string;
         address: string;
         profilePhoto?: string;
+        isVerified?: boolean;
     } | null;
     loading: boolean;
     error: string | null;
     registrationSuccess: boolean;
+    pendingVerification: boolean;
+    pendingVerificationEmail: string | null;
 }
 
 @Injectable({
@@ -29,7 +32,9 @@ export class ClientAuthStore {
         client: null,
         loading: false,
         error: null,
-        registrationSuccess: false
+        registrationSuccess: false,
+        pendingVerification: false,
+        pendingVerificationEmail: null
     });
 
     isAuthenticated = () => this.state().isAuthenticated;
@@ -37,6 +42,8 @@ export class ClientAuthStore {
     loading = () => this.state().loading;
     error = () => this.state().error;
     registrationSuccess = () => this.state().registrationSuccess;
+    pendingVerification = () => this.state().pendingVerification;
+    pendingVerificationEmail = () => this.state().pendingVerificationEmail;
 
     constructor(
         private readonly clientAuthService: ClientAuthService,
@@ -48,7 +55,14 @@ export class ClientAuthStore {
     private checkAuthentication(): void {
         const isAuth = this.clientAuthService.isAuthenticated();
         const client = this.clientAuthService.getCurrentClient();
-        if (isAuth && client) {
+        const pendingEmail = this.clientAuthService.getPendingVerificationEmail();
+        
+        if (pendingEmail) {
+            this.updateState({
+                pendingVerification: true,
+                pendingVerificationEmail: pendingEmail
+            });
+        } else if (isAuth && client) {
             this.updateState({
                 isAuthenticated: true,
                 client
@@ -67,14 +81,22 @@ export class ClientAuthStore {
             next: (response: ClientAuthResponse) => {
                 if (response.success && response.token && response.client) {
                     this.clientAuthService.saveAuthData(response.token, response.client);
+
                     this.updateState({
                         isAuthenticated: true,
                         client: response.client,
                         loading: false,
-                        error: null
+                        error: null,
+                        pendingVerification: false,
+                        pendingVerificationEmail: null
                     });
-                   
+
                     this.router.navigate(['/']);
+                } else {
+                    this.updateState({
+                        loading: false,
+                        error: response.message || 'No fue posible completar el inicio de sesión.'
+                    });
                 }
             },
             error: (error) => {
@@ -95,15 +117,20 @@ export class ClientAuthStore {
         this.clientAuthService.register(clientData).subscribe({
             next: (response: RegisterResponse) => {
                 if (response.success) {
+                   
+                    this.clientAuthService.savePendingVerificationEmail(clientData.email);
+                    
                     this.updateState({
                         loading: false,
                         error: null,
-                        registrationSuccess: true
+                        registrationSuccess: true,
+                        pendingVerification: true,
+                        pendingVerificationEmail: clientData.email
                     });
                    
                     setTimeout(() => {
-                        this.router.navigate(['/client/login']);
-                    }, 2000);
+                        this.router.navigate(['/client/verify']);
+                    }, 1500);
                 }
             },
             error: (error) => {
@@ -117,6 +144,49 @@ export class ClientAuthStore {
         });
     }
 
+    verifyCode(code: string): void {
+        const email = this.pendingVerificationEmail();
+        
+        if (!email) {
+            this.updateState({
+                error: 'Email de verificación no encontrado.'
+            });
+            return;
+        }
+
+        this.updateState({ loading: true, error: null });
+
+        const verifyRequest: VerifyCodeRequest = {
+            email,
+            code
+        };
+
+        this.clientAuthService.verifyCode(verifyRequest).subscribe({
+            next: (response: VerifyCodeResponse) => {
+                if (response.success && response.token && response.client) {
+                    this.clientAuthService.saveAuthData(response.token, response.client);
+                    this.updateState({
+                        isAuthenticated: true,
+                        client: response.client,
+                        loading: false,
+                        error: null,
+                        pendingVerification: false,
+                        pendingVerificationEmail: null
+                    });
+                   
+                    this.router.navigate(['/']);
+                }
+            },
+            error: (error) => {
+                this.updateState({
+                    loading: false,
+                    error: error.message || 'Error al verificar el código. Por favor inténtelo de nuevo.',
+                });
+                console.error('Verification error:', error);
+            }
+        });
+    }
+
     logout(): void {
         this.updateState({ loading: true });
 
@@ -126,7 +196,9 @@ export class ClientAuthStore {
                     isAuthenticated: false,
                     client: null,
                     loading: false,
-                    error: null
+                    error: null,
+                    pendingVerification: false,
+                    pendingVerificationEmail: null
                 });
                 this.router.navigate(['/client/login']);
             },
@@ -135,7 +207,9 @@ export class ClientAuthStore {
                 this.updateState({
                     isAuthenticated: false,
                     client: null,
-                    loading: false
+                    loading: false,
+                    pendingVerification: false,
+                    pendingVerificationEmail: null
                 });
             }
         });
@@ -143,6 +217,10 @@ export class ClientAuthStore {
 
     clearError(): void {
         this.updateState({ error: null });
+    }
+
+    setError(error: string): void {
+        this.updateState({ error });
     }
 
     clearRegistrationSuccess(): void {

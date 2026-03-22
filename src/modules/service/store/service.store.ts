@@ -1,4 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { Observable, catchError, map, of, tap } from 'rxjs';
 import { Service, CreateServiceDto, UpdateServiceDto } from '../models/service';
 import { ServiceService } from '../services/service.service';
 
@@ -83,32 +84,33 @@ export class ServiceStore {
     });
   }
 
-  createService(serviceData: CreateServiceDto): void {
+  createService(serviceData: CreateServiceDto): Observable<Service | null> {
     this.updateState({ loading: true, error: null });
 
-    this.serviceService.createService(serviceData).subscribe({
-      next: (newService) => {
+    return this.serviceService.createService(serviceData).pipe(
+      tap((newService) => {
         const currentServices = this.state().services;
         this.updateState({
           services: [...currentServices, newService],
           loading: false
         });
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         this.updateState({
           loading: false,
           error: 'Error creating service'
         });
         console.error('Error creating service:', error);
-      }
-    });
+        return of(null);
+      })
+    );
   }
 
-  updateService(serviceId: number, serviceData: UpdateServiceDto): void {
+  updateService(serviceId: number, serviceData: UpdateServiceDto): Observable<Service | null> {
     this.updateState({ loading: true, error: null });
 
-    this.serviceService.updateService(serviceId, serviceData).subscribe({
-      next: (updatedService) => {
+    return this.serviceService.updateService(serviceId, serviceData).pipe(
+      tap((updatedService) => {
         const currentServices = this.state().services;
 
         const updatedServices = currentServices.map(service =>
@@ -123,22 +125,24 @@ export class ServiceStore {
               : this.state().selectedService,
           loading: false
         });
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         this.updateState({
           loading: false,
           error: 'Error updating service'
         });
         console.error('Error updating service:', error);
-      }
-    });
+        return of(null);
+      })
+    );
   }
 
-  deactivateService(serviceId: number): void {
+  deactivateService(serviceId: number): Observable<boolean> {
     this.updateState({ loading: true, error: null });
 
-    this.serviceService.deactivateService(serviceId).subscribe({
-      next: () => {
+    return this.serviceService.deactivateService(serviceId).pipe(
+      map(() => true),
+      tap(() => {
         const currentServices = this.state().services;
 
         const updatedServices = currentServices.map(service =>
@@ -155,15 +159,16 @@ export class ServiceStore {
               : this.state().selectedService,
           loading: false
         });
-      },
-      error: (error) => {
+      }),
+      catchError((error) => {
         this.updateState({
           loading: false,
           error: 'Error deleting service'
         });
         console.error('Error deleting service:', error);
-      }
-    });
+        return of(false);
+      })
+    );
   }
 
   clearSelectedService(): void {
