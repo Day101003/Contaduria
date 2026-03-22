@@ -38,7 +38,7 @@
         <div class="service-detail-content">
           <h3 class="service-detail-title">{{ service.name }}</h3>
           <p class="service-detail-description">{{ service.description }}</p>
-          <button class="btn-service" routerLink="/" fragment="contact">
+          <button class="btn-service" [routerLink]="['/servicios', service.id, 'solicitar']">
             Solicitar Servicio
             <i class="fas fa-arrow-right"></i>
           </button>
