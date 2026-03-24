@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Observable, of, delay } from "rxjs";
 import { ClientLogin, CreateClientDto, ClientAuthResponse, RegisterResponse, VerifyCodeRequest, VerifyCodeResponse } from "../models/auth";
+import API_URL from "@shared/utils/api.url";
+import { mapClientToApi } from "src/modules/clients/mapper/client.api.mapper";
 
 @Injectable({
     providedIn: 'root',
@@ -32,111 +34,140 @@ export class ClientAuthService {
         return Math.floor(100000 + Math.random() * 900000).toString();
     }
 
+    getToken(): string | null {
+        return this.getCookie('auth_token');
+    }
+    
     login(credentials: ClientLogin): Observable<ClientAuthResponse> {
-        return new Observable(observer => {
-            setTimeout(() => {
-                if (credentials.email === this.mockClient.email &&
-                    credentials.password === this.mockClient.password) {
-                    observer.next({
-                        success: true,
-                        message: 'Inicio de sesión exitoso',
-                        token: 'client-jwt-token-' + Date.now(),
-                        client: {
-                            ...this.mockClient.clientData,
-                            isVerified: true
-                        }
-                    });
-                    observer.complete();
-                } else {
+        
+        return new Observable<ClientAuthResponse>(observer => {
+            const url = `${API_URL}auth/login-client`;
+            const payload = {
+                email: credentials.email,
+                password: credentials.password
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(async response => {
+                const responseData = await response.json();
+                if (!response.ok) {
                     observer.error({
                         success: false,
-                        message: 'Credenciales inválidas. Por favor verifique su correo y contraseña.'
+                        message: responseData.message || 'Error en el inicio de sesión.'
                     });
+                    return;
                 }
-            }, 1000);
+                observer.next({
+                    success: true,
+                    message: responseData.message || 'Inicio de sesión exitoso.',
+                    token: responseData.data.token,
+                    data: {
+                        token: responseData.data.token,
+                        role: responseData.data.role,
+                        userId: responseData.data.userId
+                    },
+                });
+                observer.complete();
+            })
+            .catch(err => observer.error(err));
         });
+
     }
 
-    register(clientData: CreateClientDto): Observable<RegisterResponse> {
-        return new Observable(observer => {
-            setTimeout(() => {
-              
-                const verificationCode = this.generateVerificationCode();
-                const expiryTime = new Date(Date.now() + 24 * 60 * 60 * 1000); 
+    async register(clientData: CreateClientDto): Promise<Observable<RegisterResponse>> {
 
-                this.verificationCodes.set(clientData.email, {
-                    code: verificationCode,
-                    expiry: expiryTime
-                });
+        return new Observable<RegisterResponse>(observer => {
 
-                console.log('Código de verificación de registro enviado a', clientData.email, ':', verificationCode);
+            const url = `${API_URL}clients`;
+            const payload = mapClientToApi(clientData);
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(async response => {
+                const responseData = await response.json();
+
+                if (!response.ok) {
+                    observer.error({
+                        success: false,
+                        message: responseData.message || 'Error en el registro.'
+                    });
+                    return;
+                }
 
                 observer.next({
                     success: true,
-                    message: 'Registro exitoso. Se ha enviado un código de verificación a tu correo.',
+                    message: responseData.message || 'Registro exitoso. Por favor verifica tu correo para el código de verificación.',
                     client: {
-                        id: Math.floor(Math.random() * 1000),
-                        firstName: clientData.firstName,
-                        lastName: clientData.lastName,
-                        email: clientData.email,
-                        verificationCode: verificationCode 
+                        id: responseData.id,
+                        firstName: responseData.name,
+                        lastName: responseData.surname,
+                        email: responseData.email,
                     }
                 });
+
                 observer.complete();
-            }, 1500);
+            })
+            .catch(err => observer.error(err));
+
         });
     }
 
     verifyCode(request: VerifyCodeRequest): Observable<VerifyCodeResponse> {
-        return new Observable(observer => {
-            setTimeout(() => {
-                const storedCode = this.verificationCodes.get(request.email);
 
-                if (!storedCode) {
-                    observer.error({
-                        success: false,
-                        message: 'No se encontró un código de verificación para este correo.'
-                    });
-                    return;
-                }
+        return new Observable<VerifyCodeResponse>(observer => {
+                const url = `${API_URL}auth/verify`;
+                const payload = {
+                    email: request.email,
+                    code: request.code
+                };
 
-                if (storedCode.expiry < new Date()) {
-                    this.verificationCodes.delete(request.email);
-                    observer.error({
-                        success: false,
-                        message: 'El código de verificación ha expirado. Por favor, solicita uno nuevo.'
-                    });
-                    return;
-                }
-
-                if (storedCode.code !== request.code) {
-                    observer.error({
-                        success: false,
-                        message: 'Código de verificación inválido.'
-                    });
-                    return;
-                }
-
-              
-                this.verificationCodes.delete(request.email);
-                
-                
-                if (this.mockClient.email === request.email) {
-                    this.mockClient.clientData.isVerified = true;
-                }
-
-                observer.next({
-                    success: true,
-                    message: 'Correo verificado exitosamente',
-                    token: 'client-jwt-token-' + Date.now(),
-                    client: {
-                        ...this.mockClient.clientData,
-                        isVerified: true
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                })
+                .then(async response => {
+                    const responseData = await response.json();
+                    if (!response.ok) {
+                        observer.error({
+                            success: false,
+                            message: responseData.message || 'Error al verificar el código.'
+                        });
+                        return;
                     }
-                });
-                observer.complete();
-            }, 800);
-        });
+
+                    console.log("Respuesta: " + responseData);
+                    
+
+                    observer.next({
+                        success: true,
+                        message: responseData.message || 'Correo verificado exitosamente',
+
+                    });
+                    observer.complete();
+                })
+                .catch(err => {
+                    observer.error({
+                        success: false,
+                        message: err.message || 'Error al verificar el código.'
+                    });
+                }
+            );
+            });
+
     }
 
     logout(): Observable<boolean> {
@@ -159,10 +190,36 @@ export class ClientAuthService {
         return localStorage.getItem('client_email_pending_verification');
     }
 
-    saveAuthData(token: string, client: any): void {
-        localStorage.setItem('client_auth_token', token);
-        localStorage.setItem('client_data', JSON.stringify(client));
-        localStorage.removeItem('client_email_pending_verification');
+    saveAuthData(data: any): void {
+         this.setCookie('auth_token', data.token, data.expiresIn);
+         this.setCookie('user_data', JSON.stringify({
+            userId: data.userId,
+            role: data.role,
+            name: data.name
+         }), data.expiresIn);
+    }
+
+    private setCookie(name: string, value: string, expiresInSeconds: number): void {
+        const date = new Date();
+        date.setTime(date.getTime() + (expiresInSeconds * 1000));
+
+        const expires = "expires=" + date.toUTCString();
+
+        document.cookie = `${name}=${encodeURIComponent(value)}; ${expires}; path=/; SameSite=Strict`;
+    }
+
+    private getCookie(name: string): string | null {
+        const cookies = document.cookie.split(';');
+
+        for (let cookie of cookies) {
+            const [key, value] = cookie.trim().split('=');
+
+            if (key === name) {
+                return decodeURIComponent(value);
+            }
+        }
+
+        return null;
     }
 
     savePendingVerificationEmail(email: string): void {

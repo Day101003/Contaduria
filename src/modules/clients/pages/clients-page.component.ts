@@ -106,6 +106,8 @@ export class ClientsPageComponent implements OnInit {
 
   async deleteClient(id: number): Promise<void> {
     const client = this.clientStore.clients().find(c => c.id === id);
+    console.log(client);
+    
     const confirmed = await showConfirmDialog(
       '¿Eliminar cliente?',
       `¿Está seguro de eliminar el cliente "${client?.fistName || ''} ${client?.lastName || ''}"?`

@@ -8,6 +8,12 @@ export interface Client {
     email: string;
     address: string;
     isDeleted: boolean;
+    stats?: {
+        totalFormalities: number;
+        completedFormalities: number;
+        pendingFormalities: number;
+        memberSince?: string;
+    };
 }
 export interface CreateClientDto {
     fistName: string;

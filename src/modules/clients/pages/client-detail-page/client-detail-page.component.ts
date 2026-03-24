@@ -15,14 +15,13 @@ export class ClientDetailPageComponent implements OnInit {
   client = signal<Client | null>(null);
   loading = signal(true);
   error = signal<string | null>(null);
+  stats = signal({
+    totalFormalities: 0,
+    completedFormalities: 0,
+    pendingFormalities: 0,
+    memberSince: ''
+  });
 
-
-  stats = {
-    totalFormalities: 5,
-    completedFormalities: 3,
-    pendingFormalities: 2,
-    memberSince: '2025'
-  };
 
   constructor(
     private route: ActivatedRoute,
@@ -44,6 +43,12 @@ export class ClientDetailPageComponent implements OnInit {
     this.clientService.getClientById(id).subscribe({
       next: (client) => {
         this.client.set(client);
+        this.stats.set({
+          totalFormalities: client.stats?.totalFormalities || 0,
+          completedFormalities: client.stats?.completedFormalities || 0,
+          pendingFormalities: client.stats?.pendingFormalities || 0,
+          memberSince: client.stats?.memberSince || ''
+        });
         this.loading.set(false);
       },
       error: (err) => {

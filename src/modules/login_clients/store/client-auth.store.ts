@@ -79,12 +79,12 @@ export class ClientAuthStore {
 
         this.clientAuthService.login(credentials).subscribe({
             next: (response: ClientAuthResponse) => {
-                if (response.success && response.token && response.client) {
-                    this.clientAuthService.saveAuthData(response.token, response.client);
+                if (response.success && response.token && response.data) {
+                    this.clientAuthService.saveAuthData(response.data);
 
                     this.updateState({
                         isAuthenticated: true,
-                        client: response.client,
+                        client: null,
                         loading: false,
                         error: null,
                         pendingVerification: false,
@@ -111,10 +111,10 @@ export class ClientAuthStore {
         });
     }
 
-    register(clientData: CreateClientDto): void {
+    async register(clientData: CreateClientDto): Promise<void> {
         this.updateState({ loading: true, error: null, registrationSuccess: false });
 
-        this.clientAuthService.register(clientData).subscribe({
+        (await this.clientAuthService.register(clientData)).subscribe({
             next: (response: RegisterResponse) => {
                 if (response.success) {
                    
@@ -133,7 +133,7 @@ export class ClientAuthStore {
                     }, 1500);
                 }
             },
-            error: (error) => {
+            error: (error: { message: any; }) => {
                 this.updateState({
                     loading: false,
                     error: error.message || 'Error en el registro. Por favor inténtelo de nuevo.',
@@ -146,6 +146,7 @@ export class ClientAuthStore {
 
     verifyCode(code: string): void {
         const email = this.pendingVerificationEmail();
+        console.log("Acaaa: " + email);
         
         if (!email) {
             this.updateState({
@@ -161,20 +162,25 @@ export class ClientAuthStore {
             code
         };
 
+        console.log(verifyRequest);
+        
+
         this.clientAuthService.verifyCode(verifyRequest).subscribe({
+
             next: (response: VerifyCodeResponse) => {
-                if (response.success && response.token && response.client) {
-                    this.clientAuthService.saveAuthData(response.token, response.client);
+                if (response.success) {
                     this.updateState({
                         isAuthenticated: true,
-                        client: response.client,
+                        client: null,
                         loading: false,
                         error: null,
                         pendingVerification: false,
                         pendingVerificationEmail: null
                     });
+
+                    
                    
-                    this.router.navigate(['/']);
+                    this.router.navigate(['/client/login']);
                 }
             },
             error: (error) => {

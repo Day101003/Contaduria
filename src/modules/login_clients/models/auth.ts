@@ -31,6 +31,11 @@ export interface ClientAuthResponse {
         verificationCodeExpiry?: string;
     };
     message?: string;
+    data?: {
+        token: string;
+        role: string;
+        userId: number;
+    };
 }
 
 export interface RegisterResponse {

@@ -113,14 +113,14 @@
         </tr>
       </thead>
       <tbody>
-        @if (filteredData().length === 0) {
+        @if (filteredDataCached().length === 0) {
           <tr>
             <td [attr.colspan]="columns.length + (actions.length > 0 ? 1 : 0)" class="empty-message">
               {{ searchTerm() || getActiveFiltersCount() > 0 ? 'No se encontraron resultados' : emptyMessage }}
             </td>
           </tr>
         }
-        @for (item of filteredData(); track item) {
+        @for (item of filteredDataCached(); track trackByFn($index, item)) {
           <tr (click)="onRowClick(item)">
             @for (column of columns; track column.key) {
               <td [class]="'cell-' + column.key" [attr.data-label]="column.label">{{ getValue(item, column.key) }}</td>

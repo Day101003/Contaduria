@@ -1,7 +1,8 @@
 import { Injectable, signal } from "@angular/core";
-import { Observable, tap, catchError, of, map } from 'rxjs';
+import { Observable, tap, catchError, of, map, forkJoin } from 'rxjs';
 import { Client, UpdateClientDto, CreateClientDto } from "../models/clients";
 import { ClientService } from "../services/client.service";
+import { c } from "node_modules/@angular/cdk/number-property.d-CJVxXUcb";
 
 
 
@@ -10,6 +11,12 @@ interface ClientState {
     selectClient: Client | null;
     loading: boolean;
     error: string | null;
+    stats: {
+        totalFormalities: number;
+        completedFormalities: number;
+        pendingFormalities: number;
+        memberSince?: string;
+    };
 }
 @Injectable({
     providedIn: 'root'
@@ -21,12 +28,19 @@ export class ClientStore {
         selectClient: null,
         loading: false,
         error: null,
+        stats: {
+            totalFormalities: 0,
+            completedFormalities: 0,
+            pendingFormalities: 0,
+            memberSince: undefined
+        }
     });
    
     clients = () => this.state().clients;
     selectedClient = () => this.state().selectClient;
     loading = () => this.state().loading;
     error = () => this.state().error;
+    stats = () => this.state().stats;
 
     constructor(private readonly clientService: ClientService) {}
 
@@ -46,11 +60,11 @@ export class ClientStore {
         });
     }
 
-    selectClient(clientId: number): void {
-        this.updateState({ loading: true, error: null });
+    async selectClient(clientId: number): Promise<void> {
+         this.updateState({ loading: true, error: null });
         this.clientService.getClientById(clientId).subscribe({
             next: (client) => {     
-                this.updateState({ selectClient: client, loading: false });
+                this.updateState({ selectClient: client, loading: false, stats: client.stats });
             },
             error: (error) => {
                 this.updateState({
@@ -64,8 +78,9 @@ export class ClientStore {
 
     async createClient(clientData: CreateClientDto): Promise<Observable<Client | null>> {
         this.updateState({ loading: true, error: null });
-        return (await this.clientService.createClient(clientData)).pipe(
+        return (this.clientService.createClient(clientData)).pipe(
             tap((newClient) => {
+                
                 const updatedClients = [...this.state().clients, newClient];
                 this.updateState({ clients: updatedClients, loading: false });
             }),

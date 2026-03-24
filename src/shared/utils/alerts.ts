@@ -1,6 +1,17 @@
-import Swal from 'sweetalert2';
+let Swal: any;
 
-export function showSuccessAlert(title: string, text?: string) {
+async function getSwal() {
+  if (!Swal) {
+    const module = await import('sweetalert2');
+    Swal = module.default;
+  }
+  return Swal;
+}
+
+// ✅ success
+export async function showSuccessAlert(title: string, text?: string) {
+  const Swal = await getSwal();
+
   return Swal.fire({
     title,
     text,
@@ -9,7 +20,10 @@ export function showSuccessAlert(title: string, text?: string) {
   });
 }
 
-export function showErrorAlert(title: string, text?: string) {
+// ✅ error
+export async function showErrorAlert(title: string, text?: string) {
+  const Swal = await getSwal();
+
   return Swal.fire({
     title,
     text,
@@ -18,12 +32,16 @@ export function showErrorAlert(title: string, text?: string) {
   });
 }
 
+// ✅ confirm
 export async function showConfirmDialog(
   title: string, 
   text?: string,
   confirmText: string = 'Sí, continuar',
   cancelText: string = 'Cancelar'
 ): Promise<boolean> {
+
+  const Swal = await getSwal();
+
   const result = await Swal.fire({
     title,
     text,
@@ -35,5 +53,6 @@ export async function showConfirmDialog(
     cancelButtonColor: '#d33',
     draggable: true,
   });
+
   return result.isConfirmed;
 }

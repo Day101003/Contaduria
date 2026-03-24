@@ -78,7 +78,8 @@
           <i class="fas fa-file-alt"></i>
         </div>
         <div class="stat-info">
-          <span class="stat-value">{{ stats.totalFormalities }}</span>
+  
+          <span class="stat-value">{{ stats().totalFormalities }}</span>
           <span class="stat-label">Trámites Totales</span>
         </div>
       </div>
@@ -87,7 +88,7 @@
           <i class="fas fa-check-circle"></i>
         </div>
         <div class="stat-info">
-          <span class="stat-value">{{ stats.completedFormalities }}</span>
+          <span class="stat-value">{{ stats().completedFormalities }}</span>
           <span class="stat-label">Completados</span>
         </div>
       </div>
@@ -96,7 +97,7 @@
           <i class="fas fa-clock"></i>
         </div>
         <div class="stat-info">
-          <span class="stat-value">{{ stats.pendingFormalities }}</span>
+          <span class="stat-value">{{ stats().pendingFormalities }}</span>
           <span class="stat-label">En Proceso</span>
         </div>
       </div>
@@ -105,7 +106,7 @@
           <i class="fas fa-calendar-alt"></i>
         </div>
         <div class="stat-info">
-          <span class="stat-value">{{ stats.memberSince }}</span>
+          <span class="stat-value">{{ stats().memberSince }}</span>
           <span class="stat-label">Cliente Desde</span>
         </div>
       </div>

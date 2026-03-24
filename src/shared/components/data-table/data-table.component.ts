@@ -43,6 +43,7 @@ export class DataTableComponent<T = any> {
   @Input() searchPlaceholder: string = 'Buscar...';
   @Input() searchable: boolean = true;
   @Input() filters: TableFilter[] = [];
+  @Input() trackByKey: string = 'id';
   
   @Output() rowClick = new EventEmitter<T>();
 
@@ -50,6 +51,12 @@ export class DataTableComponent<T = any> {
   searchTerm = signal<string>('');
   activeFilters = signal<{ [key: string]: string }>({});
   showFilters = signal<boolean>(false);
+
+  trackByFn = (index: number, item: any) => {
+    return item?.[this.trackByKey] ?? index;
+  };
+
+  filteredDataCached = computed(() => this.filteredData());
 
   filteredData = computed(() => {
     let result = this._data();
@@ -82,8 +89,21 @@ export class DataTableComponent<T = any> {
 
   constructor(private sanitizer: DomSanitizer) {}
 
+  private valueCache = new WeakMap<any, Record<string, any>>();
+
   getValue(item: any, key: string): any {
-    return key.split('.').reduce((obj, k) => obj?.[k], item);
+    let cache = this.valueCache.get(item);
+
+    if (!cache) {
+      cache = {};
+      this.valueCache.set(item, cache);
+    }
+
+    if (!(key in cache)) {
+      cache[key] = key.split('.').reduce((obj, k) => obj?.[k], item);
+    }
+
+    return cache[key];
   }
 
   onRowClick(item: T): void {
