@@ -5,8 +5,11 @@ import { FormalitieTemplateStore } from '../../store/formalitie-template.store';
 import { FormalitieBuilderComponent } from '../../components/formalitie-builder/formalitie-builder.component';
 import { DynamicFormRendererComponent } from '../../components/dynamic-form-renderer/dynamic-form-renderer.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
-import { FormalitieTemplate, FormalitieField, CreateFormalitieFieldDto } from '../../models/field.model';
+import { FormalitieTemplate, FormalitieField, CreateFormalitieFieldDto, UpdateFormalitieTemplateDto } from '../../models/field.model';
 import { showConfirmDialog, showErrorAlert, showSuccessAlert } from '../../../../shared/utils/alerts';
+import { Service } from 'src/modules/service/models/service';
+import { Client } from 'src/modules/clients/models/clients';
+import { User } from 'src/modules/users/models/user';
 
 type ViewMode = 'list' | 'create' | 'edit' | 'preview';
 
@@ -29,8 +32,7 @@ export class FormalitieTemplatesPageComponent implements OnInit {
   previewTemplate: FormalitieTemplate | null = null;
 
   builderFields: FormalitieField[] = [];
-  builderName = '';
-  builderDescription = '';
+  
 
   readonly TEMPLATES_PER_PAGE = 6;
   currentPage = signal(1);
@@ -112,8 +114,7 @@ export class FormalitieTemplatesPageComponent implements OnInit {
 
   showEditForm(template: FormalitieTemplate): void {
     this.editingTemplate = template;
-    this.builderName = template.name;
-    this.builderDescription = template.description || '';
+    
     this.builderFields = [...template.fields];
     this.viewMode = 'edit';
   }
@@ -127,24 +128,25 @@ export class FormalitieTemplatesPageComponent implements OnInit {
     this.editingTemplate = null;
     this.previewTemplate = null;
     this.builderFields = [];
-    this.builderName = '';
-    this.builderDescription = '';
   }
 
-  async onSaveFormalitie(data: { name: string; description: string; fields: CreateFormalitieFieldDto[] }): Promise<void> {
+  async onSaveFormalitie(data: { serviceId: number; clientId: number; userId: number; fields: CreateFormalitieFieldDto[] }): Promise<void> {
     try {
       if (this.editingTemplate) {
         await this.templateStore.updateTemplate(this.editingTemplate.id, {
-          name: data.name,
-          description: data.description,
+          serviceId: data.serviceId,
+          clientId: data.clientId,
+          userId: data.userId,
           fields: data.fields,
+          id: this.editingTemplate.id,
           active: true
         });
         showSuccessAlert('Plantilla actualizada', 'La plantilla se actualizó exitosamente.');
       } else {
         await this.templateStore.createTemplate({
-          name: data.name,
-          description: data.description,
+          clientId: data.clientId,
+          userId: data.userId,
+          serviceId: data.serviceId,
           fields: data.fields,
           active: true
         });
@@ -164,7 +166,7 @@ export class FormalitieTemplatesPageComponent implements OnInit {
   async deleteTemplate(template: FormalitieTemplate): Promise<void> {
     const confirmed = await showConfirmDialog(
       '¿Eliminar plantilla?',
-      `¿Está seguro de eliminar la plantilla "${template.name}"?`
+      `¿Está seguro de eliminar la plantilla "${template.service.name}"?`
     );
 
     if (!confirmed) {
@@ -182,10 +184,25 @@ export class FormalitieTemplatesPageComponent implements OnInit {
   }
 
   toggleTemplateActive(template: FormalitieTemplate): void {
-    this.templateStore.updateTemplate(template.id, {
-      active: !template.active
-    });
-  }
+  this.templateStore.updateTemplate(template.id, {
+    active: !template.active,
+    id: template.id,
+    serviceId: template.service.id,
+    clientId: template.client.id,
+    userId: template.user.id,
+
+    fields: template.fields.map(field => ({
+      label: field.label,
+      type: field.type,
+      order: field.order,
+      placeholder: field.placeholder,
+      helpText: field.helpText,
+      validation: field.validation,
+      options: field.options,
+      multiple: field.multiple
+    }))
+  });
+}
 
   onPreviewSubmit(): void {
     showSuccessAlert('Vista previa', 'Los datos no se enviarán en modo vista previa.');

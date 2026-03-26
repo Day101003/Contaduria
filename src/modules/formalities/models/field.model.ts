@@ -1,3 +1,7 @@
+import { Client } from "src/modules/clients/models/clients";
+import { Service } from "src/modules/service/models/service";
+import { User } from "src/modules/users/models/user";
+
 export type FieldType =
   | 'TEXT'
   | 'TEXTAREA'
@@ -68,8 +72,9 @@ export interface FieldValue {
 
 export interface FormalitieTemplate {
   id: number;
-  name: string;
-  description?: string;
+  service: Service;
+  user: User;
+  client: Client;
   fields: FormalitieField[];
   active: boolean;
   createdAt?: string;
@@ -77,15 +82,18 @@ export interface FormalitieTemplate {
 }
 
 export interface CreateFormalitieTemplateDto {
-  name: string;
-  description?: string;
+  serviceId: number;
+  userId: number;
+  clientId: number;
   fields: CreateFormalitieFieldDto[];
   active: boolean;
 }
 
 export interface UpdateFormalitieTemplateDto {
-  name?: string;
-  description?: string;
+  id: number;
+  serviceId: number;
+  userId: number;
+  clientId: number;
   fields?: CreateFormalitieFieldDto[];
   active?: boolean;
 }

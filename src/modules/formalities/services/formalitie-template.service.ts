@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
+import { Observable, of, delay, map } from 'rxjs';
 import {
   FormalitieTemplate,
   CreateFormalitieTemplateDto,
@@ -8,167 +8,15 @@ import {
   CreateFormalitieSubmissionDto,
   FormalitieField
 } from '../models/field.model';
+import API_URL from '@shared/utils/api.url';
+import { mapCreateFormalitieToApi } from '../mapper/formalitie.api.mapper';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FormalitieTemplateService {
   private mockTemplates: FormalitieTemplate[] = [
-    {
-      id: 1,
-      name: 'Formalitie de Ventas',
-      description: 'Formulario para registrar ventas realizadas',
-      active: true,
-      createdAt: '2024-01-15',
-      fields: [
-        {
-          id: 1,
-          label: 'Cliente',
-          type: 'TEXT',
-          order: 1,
-          placeholder: 'Nombre del cliente',
-          validation: { required: true, maxLength: 100 }
-        },
-        {
-          id: 2,
-          label: 'Monto',
-          type: 'NUMBER',
-          order: 2,
-          placeholder: 'Monto de la venta',
-          validation: { required: true, min: 0 }
-        },
-        {
-          id: 3,
-          label: 'Fecha de venta',
-          type: 'DATE',
-          order: 3,
-          validation: { required: true }
-        },
-        {
-          id: 4,
-          label: 'Factura',
-          type: 'FILE',
-          order: 4,
-          helpText: 'Adjunta el comprobante de la venta',
-          validation: { accept: '.pdf,.jpg,.png', maxFileSize: 5242880 }
-        },
-        {
-          id: 5,
-          label: 'Observaciones',
-          type: 'TEXTAREA',
-          order: 5,
-          placeholder: 'Notas adicionales...',
-          validation: { maxLength: 500 }
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Formalitie de Gastos',
-      description: 'Formulario para registrar gastos del negocio',
-      active: true,
-      createdAt: '2024-01-20',
-      fields: [
-        {
-          id: 1,
-          label: 'Categoría',
-          type: 'SELECT',
-          order: 1,
-          validation: { required: true },
-          options: [
-            { value: 'servicios', label: 'Servicios' },
-            { value: 'suministros', label: 'Suministros' },
-            { value: 'personal', label: 'Personal' },
-            { value: 'mantenimiento', label: 'Mantenimiento' },
-            { value: 'otros', label: 'Otros' }
-          ]
-        },
-        {
-          id: 2,
-          label: 'Descripción',
-          type: 'TEXT',
-          order: 2,
-          placeholder: 'Describe el gasto',
-          validation: { required: true }
-        },
-        {
-          id: 3,
-          label: 'Monto',
-          type: 'NUMBER',
-          order: 3,
-          validation: { required: true, min: 0 }
-        },
-        {
-          id: 4,
-          label: 'Fecha',
-          type: 'DATE',
-          order: 4,
-          validation: { required: true }
-        },
-        {
-          id: 5,
-          label: 'Recibo/Factura',
-          type: 'IMAGE',
-          order: 5,
-          helpText: 'Foto del recibo o factura',
-          validation: { maxFileSize: 10485760 }
-        },
-        {
-          id: 6,
-          label: 'Gasto recurrente',
-          type: 'CHECKBOX',
-          order: 6,
-          helpText: 'Marcar si este gasto se repite mensualmente'
-        }
-      ]
-    },
-    {
-      id: 3,
-      name: 'Formalitie de Clientes',
-      description: 'Registro de información de clientes',
-      active: true,
-      createdAt: '2024-02-01',
-      fields: [
-        {
-          id: 1,
-          label: 'Nombre completo',
-          type: 'TEXT',
-          order: 1,
-          validation: { required: true }
-        },
-        {
-          id: 2,
-          label: 'Email',
-          type: 'TEXT',
-          order: 2,
-          placeholder: 'correo@ejemplo.com',
-          validation: { required: true, pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$' }
-        },
-        {
-          id: 3,
-          label: 'Teléfono',
-          type: 'TEXT',
-          order: 3
-        },
-        {
-          id: 4,
-          label: 'Tipo de cliente',
-          type: 'SELECT',
-          order: 4,
-          validation: { required: true },
-          options: [
-            { value: 'individual', label: 'Individual' },
-            { value: 'empresa', label: 'Empresa' }
-          ]
-        },
-        {
-          id: 5,
-          label: 'Notas',
-          type: 'TEXTAREA',
-          order: 5
-        }
-      ]
-    }
+    
   ];
 
   private mockSubmissions: FormalitieSubmission[] = [];
@@ -190,22 +38,41 @@ export class FormalitieTemplateService {
   }
 
   createTemplate(data: CreateFormalitieTemplateDto): Observable<FormalitieTemplate> {
-    const fields: FormalitieField[] = data.fields.map((field, index) => ({
-      ...field,
-      id: index + 1
-    }));
+    return new Observable<FormalitieTemplate>((observer) => {
+      const url = API_URL + "formalities";
 
-    const newTemplate: FormalitieTemplate = {
-      id: this.nextTemplateId++,
-      name: data.name,
-      description: data.description,
-      active: data.active,
-      fields,
-      createdAt: new Date().toISOString().split('T')[0]
-    };
+      const payload = mapCreateFormalitieToApi(data);
 
-    this.mockTemplates.push(newTemplate);
-    return of(newTemplate).pipe(delay(500));
+      fetch(url, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+        .then(async response => {
+          if (!response.ok) {
+            const errorData = await response.json();
+            observer.error(errorData.message || "Error al crear la plantilla");
+            return;
+          }
+          const createdTemplateData = await response.json();
+          const createdTemplate: FormalitieTemplate = {
+            id: createdTemplateData.data.id,
+            service: createdTemplateData.data.service,
+            user: createdTemplateData.data.user,
+            client: createdTemplateData.data.client,
+            fields: data.fields.map((field, index) => ({
+              id: index + 1,
+              ...field
+            })),
+            active: data.active,
+            createdAt: new Date().toISOString()
+          };
+          observer.next(createdTemplate);
+          observer.complete();
+        })
+    })
   }
 
   updateTemplate(id: number, data: UpdateFormalitieTemplateDto): Observable<FormalitieTemplate> {
@@ -259,7 +126,7 @@ export class FormalitieTemplateService {
     const newSubmission: FormalitieSubmission = {
       id: this.nextSubmissionId++,
       templateId: data.templateId,
-      templateName: template.name,
+      templateName: template.service.name,
       values: [...data.values],
       submittedAt: new Date().toISOString()
     };

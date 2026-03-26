@@ -55,16 +55,14 @@ export class ServicesPageComponent implements OnInit, AfterViewInit {
       `¿Está seguro de eliminar el servicio "${service.name}"?`
     );
 
+    console.log(service);
+    
+
     if (!confirmed) {
       return;
     }
 
-    const updatedService = {
-      ...service,
-      active: false,
-    };
-
-    this.serviceStore.updateService(service.id, updatedService).subscribe({
+    this.serviceStore.deactivateService(service.id).subscribe({
       next: (savedService) => {
         if (savedService) {
           showSuccessAlert('Servicio eliminado', 'El servicio ha sido eliminado exitosamente');
@@ -110,9 +108,11 @@ export class ServicesPageComponent implements OnInit, AfterViewInit {
 
   saveService(): void {
     if (!validateService(this.newService)) {
+      this.closeCreateForm();
       showErrorAlert('Campos incompletos', 'Por favor complete todos los campos requeridos.');
       return;
-    }
+    }    
+  
 
     if (this.isEditMode && this.editingServiceId) {
       this.serviceStore.updateService(this.editingServiceId, this.newService).subscribe({
@@ -120,21 +120,23 @@ export class ServicesPageComponent implements OnInit, AfterViewInit {
           if (service) {
             showSuccessAlert('Servicio actualizado', 'El servicio ha sido actualizado exitosamente');
           } else {
-            showErrorAlert('Error', 'No se pudo actualizar el servicio');
+            showErrorAlert('Error', this.serviceStore.error() || 'No se pudo actualizar el servicio');
           }
         },
-        error: () => showErrorAlert('Error', 'No se pudo actualizar el servicio')
+        error: () => showErrorAlert('Error', this.serviceStore.error() || 'No se pudo actualizar el servicio')
       });
     } else {
       this.serviceStore.createService(this.newService).subscribe({
         next: (service) => {
+          console.log(this.serviceStore.error());
+          
           if (service) {
             showSuccessAlert('Servicio creado', 'El servicio ha sido creado exitosamente');
           } else {
-            showErrorAlert('Error', 'No se pudo crear el servicio');
+            showErrorAlert('Error', this.serviceStore.error() || 'No se pudo crear el servicio');
           }
         },
-        error: () => showErrorAlert('Error', 'No se pudo crear el servicio')
+        error: () => showErrorAlert('Error', this.serviceStore.error() || 'No se pudo crear el servicio')
       });
     }
 

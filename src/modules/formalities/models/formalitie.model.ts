@@ -1,10 +1,13 @@
+import { User } from 'src/modules/users/models/user';
 import { FieldValue } from './field.model';
+import { Service } from 'src/modules/service/models/service';
+import { Client } from 'src/modules/clients/models/clients';
 
 export interface FormalitieTemplateApi {
   id: number;
-  nombre: string;
-  descripcion?: string;
-  categoria?: string;
+  user: User;
+  client: Client;
+  service: Service;
   activo: boolean;
   created_at?: string;
   updated_at?: string;

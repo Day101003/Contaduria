@@ -2,6 +2,11 @@ import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormalitieTemplate } from '../../models/field.model';
 
+//  <h3>{{ template.name }}</h3>
+//                       @if (template.description) {
+//                         <p class="template-description">{{ template.description }}</p>
+//                       }
+
 @Component({
   selector: 'app-template-selector',
   standalone: true,
@@ -60,10 +65,11 @@ import { FormalitieTemplate } from '../../models/field.model';
                     </div>
 
                     <div class="template-info">
-                      <h3>{{ template.name }}</h3>
-                      @if (template.description) {
-                        <p class="template-description">{{ template.description }}</p>
-                      }
+                     
+
+
+
+
                       <div class="template-meta">
                         @if (template.fields && template.fields.length) {
                           <span class="fields-count">

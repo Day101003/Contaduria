@@ -13,7 +13,7 @@
         <polyline points="22 4 12 14.01 9 11.01"></polyline>
       </svg>
       <div>
-        <strong>¡Formalitie enviada exitosamente!</strong>
+        <strong>¡Tramite enviado exitosamente!</strong>
         <span>{{ lastSubmittedFormalitie }}</span>
       </div>
     </div>
@@ -34,9 +34,9 @@
       [disabled]="templateStore.loading()"
     >
       <option value="">-- Selecciona un tipo de formalitie --</option>
-      <option *ngFor="let template of templateStore.activeTemplates()" [value]="template.id">
+      <!-- <option *ngFor="let template of templateStore.activeTemplates()" [value]="template.id">
         {{ template.name }}
-      </option>
+      </option> -->
     </select>
 
     <div *ngIf="templateStore.loading()" class="loading-indicator">

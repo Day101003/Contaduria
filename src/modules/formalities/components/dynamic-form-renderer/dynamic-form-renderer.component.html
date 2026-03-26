@@ -1,7 +1,6 @@
 <form class="dynamic-form" (ngSubmit)="onSubmit($event)" #formRef="ngForm">
   <div *ngIf="template" class="form-header">
-    <h2 class="form-title">{{ template.name }}</h2>
-    <p *ngIf="template.description" class="form-description">{{ template.description }}</p>
+    
   </div>
 
   <div *ngIf="steps.length > 1" class="steps-indicator">

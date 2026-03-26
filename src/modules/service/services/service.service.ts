@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, delay } from 'rxjs';
 import { Service, CreateServiceDto, UpdateServiceDto } from '../models/service';
+import API_URL from '@shared/utils/api.url';
 
 @Injectable({
   providedIn: 'root',
@@ -50,8 +51,26 @@ export class ServiceService {
   constructor() {}
 
   getServices(): Observable<Service[]> {
-    return of([...this.mockServices]).pipe(delay(500));
-  }
+    return new Observable((observer) => {
+      const url = API_URL + 'services';
+
+      fetch(url)
+        .then(async (response) => {
+          if (!response.ok) {
+            const errorData = await response.json();
+            observer.error(errorData.message || 'Error al obtener los servicios.');
+            return;
+          }
+
+          const servicesData = await response.json();
+          const services: Service[] = servicesData.data?.content || [];
+          observer.next(services);
+        })
+        .catch((error) => {
+          observer.error('Error de red al obtener los servicios.');
+          console.error('Error fetching services:', error);
+        });
+  })}
 
   getServiceById(id: number): Observable<Service> {
     const service = this.mockServices.find((s) => s.id === id);
@@ -64,44 +83,92 @@ export class ServiceService {
   }
 
   createService(serviceData: CreateServiceDto): Observable<Service> {
-    const newService: Service = {
-      id: this.nextId++,
-      ...serviceData,
-      active: true,
-    };
+    
+    return new Observable((observer) => {
+      const url = API_URL + 'services';
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(serviceData),
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.log(errorData.message);
+            observer.error(errorData.message || 'Error al crear el servicio.');
+            return;
+          }
+          const createdServiceData = await response.json();
+          const createdService: Service = createdServiceData.data;
+          observer.next(createdService);
+          observer.complete();
+        }
+        ).catch((error) => {
+          observer.error('Error de red al crear el servicio.');
+          console.error('Error creating service:', error);
+        });
+    });
 
-    this.mockServices.push(newService);
-    return of(newService).pipe(delay(500));
   }
 
   updateService(id: number, serviceData: UpdateServiceDto): Observable<Service> {
-    const index = this.mockServices.findIndex((s) => s.id === id);
-
-    if (index === -1) {
-      throw new Error('Service not found');
-    }
-
-    this.mockServices[index] = {
-      ...this.mockServices[index],
-      ...serviceData,
-    };
-
-    return of(this.mockServices[index]).pipe(delay(500));
+    
+    return new Observable((observer) => {
+      const url = `${API_URL}services/${id}`;
+      fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(serviceData),
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            const errorData = await response.json();
+            
+            
+            observer.error(errorData.message || 'Error al actualizar el servicio.');
+            return;
+          }
+          const updatedServiceData = await response.json();
+          const updatedService: Service = updatedServiceData.data;
+          observer.next(updatedService);
+          observer.complete();
+        }
+        ).catch((error) => {
+          observer.error('Error de red al actualizar el servicio.');
+          console.error('Error updating service:', error);
+        });
+    });
   }
 
   deactivateService(id: number): Observable<void> {
-    const index = this.mockServices.findIndex((s) => s.id === id);
-
-    if (index === -1) {
-      throw new Error('Service not found');
-    }
-
-    this.mockServices[index] = {
-      ...this.mockServices[index],
-      active: false,
-    };
-
-    return of(void 0).pipe(delay(500));
+    return new Observable((observer) => {
+      const url = `${API_URL}services/deactivate/${id}`;
+      fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(async (response) => {
+          console.log(response);
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            observer.error(errorData.message || 'Error al eliminar el servicio.');
+            return;
+          }
+          observer.next();
+          observer.complete();
+        }
+        ).catch((error) => {
+          observer.error('Error de red al eliminar el servicio.');
+          console.error('Error deactivating service:', error);
+        });
+    });
   }
 
   getActiveServices(): Observable<Service[]> {

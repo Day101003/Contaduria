@@ -6,6 +6,15 @@ import { DynamicFormRendererComponent } from '../../components/dynamic-form-rend
 import { FieldValue } from '../../models/field.model';
 import { showSuccessAlert, showErrorAlert, showConfirmDialog } from '../../../../shared/utils/alerts';
 
+//  @if (store.selectedTemplate()) {
+//             <h1>{{ store.selectedTemplate()!.name }}</h1>
+//             @if (store.selectedTemplate()!.description) {
+//               <p class="description">{{ store.selectedTemplate()!.description }}</p>
+//             }
+//           } @else {
+//             <h1>Crear Nuevo Tramite</h1>
+//           } 
+
 @Component({
   selector: 'app-formalitie-create-page',
   standalone: true,
@@ -21,14 +30,10 @@ import { showSuccessAlert, showErrorAlert, showConfirmDialog } from '../../../..
         </button>
 
         <div class="header-info">
-          @if (store.selectedTemplate()) {
-            <h1>{{ store.selectedTemplate()!.name }}</h1>
-            @if (store.selectedTemplate()!.description) {
-              <p class="description">{{ store.selectedTemplate()!.description }}</p>
-            }
-          } @else {
-            <h1>Crear Nueva Formalitie</h1>
-          }
+         
+
+
+        
         </div>
       </div>
 

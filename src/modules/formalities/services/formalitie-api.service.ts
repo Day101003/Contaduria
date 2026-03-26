@@ -22,32 +22,49 @@ export class FormalitiesApiService {
   constructor(private http: HttpClient) {}
 
   getActiveTemplates(): Observable<FormalitieTemplate[]> {
-    if (USE_API) {
-      return this.http.get<any[]>(`${API_URL}/servicios?activo=true`).pipe(
-        map(data => data.map(t => ({ ...mapTemplateFromApi(t), fields: [] })))
-      );
-    }
-
-    return of(MOCK_TEMPLATES.filter(t => t.activo).map(t => ({
-      ...mapTemplateFromApi(t),
-      fields: []
-    }))).pipe(delay(300));
+    return new Observable<FormalitieTemplate[]>((observer) => {
+      const url = API_URL + "formalities/active-templates";
+      fetch(url)
+        .then(async (response) => {
+          if (!response.ok) {
+            const errorData = await response.json();
+            observer.error(errorData.message || "Error al cargar plantillas activas");
+            return;
+          }
+          const templatesData = await response.json();
+          const templates = templatesData.map(mapTemplateFromApi);
+          observer.next(templates);
+          observer.complete();
+        }
+        ).catch((error) => {
+          observer.error("Error de red al cargar plantillas activas");
+          console.error("Network error:", error);
+        });
+    });
   }
 
   getTemplateById(id: number): Observable<FormalitieTemplate | null> {
-    if (USE_API) {
-      return this.http.get<any>(`${API_URL}/servicios/${id}`).pipe(
-        map(t => t ? { ...mapTemplateFromApi(t), fields: t.campos?.map(mapFieldFromApi) || [] } : null)
-      );
-    }
+    return new Observable<FormalitieTemplate | null>((observer) => {
+      const url = `${API_URL}formalities/templates/${id}`;
+      fetch(url)
+        .then(async (response) => {
+          if (!response.ok) {
+            const errorData = await response.json();
+            observer.error(errorData.message || "Error al cargar plantilla");
+            return;
+          }
 
-    const template = MOCK_TEMPLATES.find(t => t.id === id);
-    if (!template) return of(null).pipe(delay(200));
-
-    return of({
-      ...mapTemplateFromApi(template),
-      fields: template.fields.map(mapFieldFromApi).sort((a, b) => a.order - b.order)
-    }).pipe(delay(300));
+          const templateData = await response.json();
+          const template = { ...mapTemplateFromApi(templateData), fields: [] };
+          observer.next(template);
+          observer.complete();
+        })
+        .catch((error) => {
+          observer.error("Error de red al cargar plantilla");
+          console.error("Network error:", error);
+        });
+    });
+    
   }
 
   getTemplateFields(templateId: number): Observable<FormalitieField[]> {
@@ -97,8 +114,9 @@ export class FormalitiesApiService {
     const newTramite = {
       id: this.nextTramiteId++,
       servicio_id: templateId,
-      servicio_nombre: template?.nombre || '',
-      categoria: template?.categoria,
+      servicio_nombre: template?.service.name || '',
+      client: template?.client || null,
+      user: template?.user || null,
       usuario_id: 1,
       usuario_nombre: 'Usuario Actual',
       estado: 'pendiente' as const,

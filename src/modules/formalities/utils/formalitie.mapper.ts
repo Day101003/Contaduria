@@ -1,3 +1,4 @@
+import { Client } from 'src/modules/clients/models/clients';
 import { FormalitieField, FieldType, FieldValue } from '../models/field.model';
 import {
   FormalitieTemplateApi,
@@ -8,21 +9,49 @@ import {
 import {
   GeneratedFormalitie
 } from '../models/formalitie.model';
+import { User } from 'src/modules/users/models/user';
+import { Service } from 'src/modules/service/models/service';
 
 export function mapTemplateFromApi(api: FormalitieTemplateApi): {
   id: number;
-  name: string;
-  description?: string;
-  category?: string;
+  service: Service,
+  client: Client,
+  user: User
   active: boolean;
   createdAt?: string;
   updatedAt?: string;
 } {
   return {
     id: api.id,
-    name: api.nombre,
-    description: api.descripcion,
-    category: api.categoria,
+    service: {
+      id: 0,
+      name: '',
+      active: false,
+      description: '',
+    },
+    client: {
+      id: 0,
+      fistName: '',
+      lastName: '',
+      profilePhoto: '',
+      phone: '',
+      idCard: '',
+      email: '',
+      address: '',
+      isDeleted: false
+    },
+    user: {
+      id: 0,
+      firstName: '',
+      lastName: '',
+      profilePhoto: '',
+      phone: '',
+      idCard: '',
+      email: '',
+      roleId: 0,
+      address: '',
+      isDeleted: false
+    },
     active: api.activo,
     createdAt: api.created_at,
     updatedAt: api.updated_at

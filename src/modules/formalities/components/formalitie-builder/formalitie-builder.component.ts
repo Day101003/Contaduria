@@ -10,6 +10,7 @@ import {
 } from '../../models/field.model';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { showConfirmDialog, showErrorAlert } from '../../../../shared/utils/alerts';
+import { ClientStore } from 'src/modules/clients/store/client.store';
 
 interface FieldTypeOption {
   type: FieldType;
@@ -38,13 +39,17 @@ const FIELD_TYPES: FieldTypeOption[] = [
 })
 export class FormalitieBuilderComponent implements OnInit {
   @Input() fields: FormalitieField[] = [];
-  @Input() formalitieName = '';
-  @Input() formalitieDescription = '';
+  @Input() serviceId: number = 0;
+  @Input() clientId: number = 0;
+  @Input() userId: number = 0;
 
+    
+  
   @Output() fieldsChange = new EventEmitter<FormalitieField[]>();
   @Output() saveFormalitie = new EventEmitter<{
-    name: string;
-    description: string;
+    serviceId: number;
+    clientId: number;
+    userId: number;
     fields: CreateFormalitieFieldDto[];
   }>();
   @Output() cancel = new EventEmitter<void>();
@@ -74,6 +79,7 @@ export class FormalitieBuilderComponent implements OnInit {
   } = this.getEmptyEditorForm();
 
   private nextId = 1;
+  
 
   get totalPages(): number {
     return Math.ceil(this.fields.length / this.FIELDS_PER_PAGE);
@@ -348,8 +354,8 @@ export class FormalitieBuilderComponent implements OnInit {
   }
 
   onSaveFormalitie(): void {
-    if (!this.formalitieName.trim()) {
-      showErrorAlert('Campo requerido', 'Por favor ingresa un nombre para la formalitie.');
+    if (this.fields.length === 0) {
+      showErrorAlert('Debe agregar al menos un campo para guardar el trámite.');
       return;
     }
 
@@ -366,8 +372,10 @@ export class FormalitieBuilderComponent implements OnInit {
     }));
 
     this.saveFormalitie.emit({
-      name: this.formalitieName.trim(),
-      description: this.formalitieDescription.trim(),
+      serviceId: this.serviceId,
+      clientId: this.clientId,
+      userId: this.userId,
+
       fields: fieldsDto
     });
   }

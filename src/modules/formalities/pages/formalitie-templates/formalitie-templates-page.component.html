@@ -53,14 +53,14 @@
         [class.inactive]="!template.active"
       >
         <div class="template-header">
-          <h3 class="template-name">{{ template.name }}</h3>
+          <h3 class="template-name">{{ template.service.name }}</h3>
           <span class="status-badge" [class.active]="template.active">
             {{ template.active ? 'Activo' : 'Inactivo' }}
           </span>
         </div>
 
-        <p *ngIf="template.description" class="template-description">
-          {{ template.description }}
+        <p *ngIf="template.client" class="template-description">
+           {{ template.client.id }}
         </p>
 
         <div class="template-fields">
@@ -154,7 +154,7 @@
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
-        Crear Plantilla
+        Crear Plantilla 
       </button>
     </div>
   </div>
@@ -162,8 +162,7 @@
   <div *ngIf="viewMode === 'create' || viewMode === 'edit'" class="builder-container">
     <app-formalitie-builder
       [fields]="builderFields"
-      [formalitieName]="builderName"
-      [formalitieDescription]="builderDescription"
+      
       (saveFormalitie)="onSaveFormalitie($event)"
       (cancel)="onBuilderCancel()"
     ></app-formalitie-builder>

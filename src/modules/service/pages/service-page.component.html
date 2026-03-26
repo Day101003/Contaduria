@@ -15,9 +15,6 @@
     <div class="loading">Cargando servicios...</div>
   }
 
-  @if (serviceStore.error()) {
-    <div class="error">{{ serviceStore.error() }}</div>
-  }
 
   <div class="reports-grid">
     @for (service of pagination.paginatedItems(); track service.id) {

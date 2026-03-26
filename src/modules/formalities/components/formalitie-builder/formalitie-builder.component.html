@@ -1,18 +1,28 @@
 <div class="formalitie-builder">
   <div class="builder-header">
     <div class="formalitie-info">
-      <input
+      <select
+        class="service-selector"
         type="text"
         class="formalitie-name-input"
-        [(ngModel)]="formalitieName"
+        [(ngModel)]="serviceId"
         placeholder="Nombre del tramite"
-      />
-      <textarea
-        class="formalitie-description-input"
-        [(ngModel)]="formalitieDescription"
-        placeholder="Descripción del tramite (opcional)"
-        rows="2"
-      ></textarea>
+      >
+        <option value="">Seleccionar servicio</option>
+        <!-- <option *ngFor="let service of services" [value]="service.id">
+          {{ service.name }}
+        </option> -->
+      </select>
+      <select 
+        class="client-selector"
+        [(ngModel)]="clientId"
+        placeholder="Seleccionar cliente (opcional)"
+      >
+        <option value="">Sin cliente específico</option>
+        <!-- <option *ngFor="let client of clients" [value]="client.id">
+          {{ client.name }}
+        </option> -->
+      </select>
     </div>
   </div>
 

@@ -96,11 +96,14 @@ export class ServiceStore {
         });
       }),
       catchError((error) => {
+        console.log(error);
+        
+        
         this.updateState({
           loading: false,
-          error: 'Error creating service'
+          error: error || 'Error al crear el servicio'
         });
-        console.error('Error creating service:', error);
+    
         return of(null);
       })
     );
@@ -129,9 +132,8 @@ export class ServiceStore {
       catchError((error) => {
         this.updateState({
           loading: false,
-          error: 'Error updating service'
+          error: error || 'Error al actualizar el servicio'
         });
-        console.error('Error updating service:', error);
         return of(null);
       })
     );
