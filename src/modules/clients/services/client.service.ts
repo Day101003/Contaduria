@@ -18,7 +18,7 @@ export class ClientService {
             profilePhoto: 'assets/img/foto1.jpeg',
             phone: '84481308',
             idCard: '305480349',
-            email: 'dayanna.solano@example.com',    
+            email: 'dayanna.solano@example.com',
             address: 'Av9. Coyol Turrialba',
             isDeleted: false,
         },
@@ -46,7 +46,7 @@ export class ClientService {
         },
         {
             id: 4,
-            fistName: 'Sebastián'   
+            fistName: 'Sebastián'
 ,            lastName: 'Fallas Fernández',
             profilePhoto: 'assets/img/foto4.jpeg',
             phone: '8095552345',
@@ -66,12 +66,12 @@ export class ClientService {
             address: 'Av. 27 de Febrero #654, Naco',
             isDeleted: false,
         },
-    ];  
+    ];
 
     private nextId: number = 6;
     constructor() {}
     getClients(): Observable<Client[]> {
-        
+
         return new Observable<Client[]>(observer => {
             const url = API_URL + 'clients';
 
@@ -84,9 +84,9 @@ export class ClientService {
                     }
                     const clientsData = await response.json();
                     console.log(clientsData);
-                    
+
                     const clients: Client[] = mapClientsFromApi(clientsData.data?.content || []);
-                    
+
                     observer.next(clients);
                 }
                 )
@@ -95,7 +95,7 @@ export class ClientService {
                     console.error('Error fetching clients:', error);
                 }
             );
-        
+
         })
 
     }
@@ -114,7 +114,7 @@ export class ClientService {
                     const clientData = await response.json();
                     const client: Client = mapClientFromApiStats(clientData.data);
                     console.log(client);
-                    
+
                     observer.next(client);
                 }
                 )
@@ -138,8 +138,8 @@ export class ClientService {
                         observer.error(errorData.message || 'Error al obtener el conteo de formalidades.');
                         return;
                     }
-                    const countData = await response.json();                    
-                    
+                    const countData = await response.json();
+
                     observer.next({
                         total: countData.data.total,
                         completed: countData.data.completed,
@@ -217,12 +217,12 @@ export class ClientService {
                 }
                 ).catch(error => {
                     console.log(error);
-                    
+
                     observer.error('Error de red al eliminar el cliente.');
                     console.error('Error deleting client:', error);
                 }
             );
         }
     )}
-        
+
 }

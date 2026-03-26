@@ -1,186 +1,117 @@
-import { Injectable, signal, computed } from '@angular/core';
-import { Observable, tap, catchError, of, map } from 'rxjs';
-import { User, CreateUserDto, UpdateUserDto } from '../models/user';
+import { Injectable, computed, signal } from '@angular/core';
+import { Observable, tap } from 'rxjs';
 import { UserService } from '../services/user.service';
-
-interface UserState {
-  users: User[];
-  selectedUser: User | null;
-  loading: boolean;
-  error: string | null;
-}
+import { CreateUserDto, UpdateUserDto, User } from '../models/user';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserStore {
+  private usersSignal = signal<User[]>([]);
+  private selectedUserSignal = signal<User | null>(null);
+  private loadingSignal = signal(false);
+  private errorSignal = signal<string | null>(null);
 
-  private readonly state = signal<UserState>({
-    users: [],
-    selectedUser: null,
-    loading: false,
-    error: null
-  });
+  users = computed(() => this.usersSignal());
+  selectedUser = computed(() => this.selectedUserSignal());
+  loading = computed(() => this.loadingSignal());
+  error = computed(() => this.errorSignal());
+  activeUsers = computed(() => this.usersSignal().filter(user => !user.isDeleted));
 
-  
-  users = computed(() => this.state().users);
-  selectedUser = computed(() => this.state().selectedUser);
-  loading = computed(() => this.state().loading);
-  error = computed(() => this.state().error);
-  
-  
-  activeUsers = computed(() => 
-    this.state().users.filter(user => !user.isDeleted)
-  );
-
-  constructor(private readonly userService: UserService) {}
-
+  constructor(private userService: UserService) {}
 
   loadUsers(): void {
-    this.updateState({ loading: true, error: null });
-    
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
     this.userService.getUsers().subscribe({
-      next: (users) => {
-        this.updateState({ users, loading: false });
+      next: (users: User[]) => {
+        this.usersSignal.set(users);
+        this.loadingSignal.set(false);
       },
-      error: (error) => {
-        this.updateState({ 
-          loading: false, 
-          error: 'Error loading users' 
-        });
-        console.error('Error loading users:', error);
-      }
+      error: (error: any) => {
+        this.errorSignal.set(error);
+        this.loadingSignal.set(false);
+      },
     });
   }
 
- 
-  loadActiveUsers(): void {
-    this.updateState({ loading: true, error: null });
-    
-    this.userService.getActiveUsers().subscribe({
-      next: (users) => {
-        this.updateState({ users, loading: false });
-      },
-      error: (error) => {
-        this.updateState({ 
-          loading: false, 
-          error: 'Error loading active users' 
-        });
-        console.error('Error loading active users:', error);
-      }
-    });
+  getUserById(id: number): Observable<User> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return this.userService.getUserById(id).pipe(
+      tap({
+        next: (user: User) => {
+          this.selectedUserSignal.set(user);
+          this.loadingSignal.set(false);
+        },
+        error: (error: any) => {
+          this.errorSignal.set(error);
+          this.loadingSignal.set(false);
+        }
+      })
+    );
   }
 
-  
-  selectUser(userId: number): void {
-    this.updateState({ loading: true, error: null });
-    
-    this.userService.getUserById(userId).subscribe({
-      next: (user) => {
-        this.updateState({ selectedUser: user, loading: false });
-      },
-      error: (error) => {
-        this.updateState({ 
-          loading: false, 
-          error: 'Error loading user' 
-        });
-        console.error('Error loading user:', error);
-      }
-    });
-  }
+  createUser(userData: CreateUserDto): Observable<User> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
 
- 
-  createUser(userData: CreateUserDto): Observable<User | null> {
-    this.updateState({ loading: true, error: null });
-    
     return this.userService.createUser(userData).pipe(
-      tap((newUser) => {
-        const currentUsers = this.state().users;
-        this.updateState({ 
-          users: [...currentUsers, newUser],
-          loading: false 
-        });
-      }),
-      catchError((error) => {
-        this.updateState({ 
-          loading: false, 
-          error: 'Error creating user' 
-        });
-        console.error('Error creating user:', error);
-        return of(null);
+      tap({
+        next: (user: User) => {
+          this.usersSignal.update(users => [...users, user]);
+          this.loadingSignal.set(false);
+        },
+        error: (error: any) => {
+          this.errorSignal.set(error);
+          this.loadingSignal.set(false);
+        }
       })
     );
   }
 
-  
-  updateUser(userId: number, userData: UpdateUserDto): Observable<User | null> {
-    this.updateState({ loading: true, error: null });
-    
-    return this.userService.updateUser(userId, userData).pipe(
-      tap((updatedUser) => {
-        const currentUsers = this.state().users;
-        const updatedUsers = currentUsers.map(user => 
-          user.id === userId ? updatedUser : user
-        );
-        this.updateState({ 
-          users: updatedUsers,
-          selectedUser: this.state().selectedUser?.id === userId 
-            ? updatedUser 
-            : this.state().selectedUser,
-          loading: false 
-        });
-      }),
-      catchError((error) => {
-        this.updateState({ 
-          loading: false, 
-          error: 'Error updating user' 
-        });
-        console.error('Error updating user:', error);
-        return of(null);
+  updateUser(id: number, userData: UpdateUserDto): Observable<User> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return this.userService.updateUser(id, userData).pipe(
+      tap({
+        next: (updatedUser: User) => {
+          this.usersSignal.update(users =>
+            users.map(user => user.id === id ? updatedUser : user)
+          );
+          this.selectedUserSignal.set(updatedUser);
+          this.loadingSignal.set(false);
+        },
+        error: (error: any) => {
+          this.errorSignal.set(error);
+          this.loadingSignal.set(false);
+        }
       })
     );
   }
 
- 
-  deleteUser(userId: number): Observable<boolean> {
-    this.updateState({ loading: true, error: null });
-    
-    return this.userService.deleteUser(userId).pipe(
-      map(() => {
-        const currentUsers = this.state().users;
-        const updatedUsers = currentUsers.filter(user => user.id !== userId);
-        this.updateState({ 
-          users: updatedUsers,
-          selectedUser: this.state().selectedUser?.id === userId 
-            ? null 
-            : this.state().selectedUser,
-          loading: false 
-        });
-        return true;
-      }),
-      catchError((error) => {
-        this.updateState({ 
-          loading: false, 
-          error: 'Error deleting user' 
-        });
-        console.error('Error deleting user:', error);
-        return of(false);
+  deleteUser(id: number): Observable<void> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    return this.userService.deleteUser(id).pipe(
+      tap({
+        next: () => {
+          this.usersSignal.update(users =>
+            users.map(user =>
+              user.id === id ? { ...user, isDeleted: true } : user
+            )
+          );
+          this.loadingSignal.set(false);
+        },
+        error: (error: any) => {
+          this.errorSignal.set(error);
+          this.loadingSignal.set(false);
+        }
       })
     );
-  }
-
-  
-  clearSelectedUser(): void {
-    this.updateState({ selectedUser: null });
-  }
-
-  
-  clearError(): void {
-    this.updateState({ error: null });
-  }
-
-  
-  private updateState(partial: Partial<UserState>): void {
-    this.state.update(state => ({ ...state, ...partial }));
   }
 }
