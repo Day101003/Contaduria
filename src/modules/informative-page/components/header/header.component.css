@@ -81,7 +81,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
-  height: 70px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -91,12 +91,12 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   text-decoration: none;
 }
 
 .logo-img {
-  height: 45px;
+  height: 70px;
   width: auto;
 }
 

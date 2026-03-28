@@ -21,40 +21,47 @@ interface TeamMember {
 export class TeamComponent {
   teamMembers: TeamMember[] = [
     {
-      name: 'Alejandra Castillo',
-      position: 'Director General',
-      image: null, 
+      name: 'David Castillo Chaves',
+      position: 'Contador Publico Autorizado',
+      image: 'assets/shared/img/team/David.jpeg',
       social: {
         email: 'director@despachocastillo.com',
-        phone: '+506 844812408',
       },
     },
     {
-      name: 'Carlos Castillo',
-      position: 'Contador Principal',
-      image: null,
+      name: 'María Fernanda Rodríguez Picado',
+      position: 'Contadora privada incorporada',
+      image: 'assets/shared/img/team/Maria.jpeg',
       social: {
         email: 'contador@despachocastillo.com',
-        phone: '+506 844812408',
       },
     },
     {
-      name: 'María López',
-      position: 'Asesor Fiscal',
-      image: null,
+      name: 'Stephanie Salazar Sánchez ',
+      position: 'Auxiliar contable',
+      image: 'assets/shared/img/team/Stephanie.jpeg',
       social: {
         email: 'asesor@despachocastillo.com',
-        phone: '+506 844812408',
       },
     },
     {
-      name: 'Ana María González',
-      position: 'Atención al Cliente',
-      image: null,
+      name: 'Nancy Brenes Andrade ',
+      position: 'Auxiliar contable',
+      image: 'assets/shared/img/team/Nancy.jpeg',
       social: {
         email: 'atencion@despachocastillo.com',
-        phone: '+506 844812408',
+      },
+    },
+     {
+      name: 'Melina Gonzales Serrano',
+      position: 'Auxiliar contable',
+      image: 'assets/shared/img/team/Melina.jpeg',
+      social: {
+        email: 'atencion@despachocastillo.com',
       },
     },
   ];
+  trackByName(index: number, member: TeamMember): string {
+    return member.name;
+  }
 }
