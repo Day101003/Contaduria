@@ -20,6 +20,8 @@ export interface CreateUserDto {
   email: string;
   roleId: number;
   address: string;
+  password?: string;
+  confirmPassword?: string;
 }
 
 export interface UpdateUserDto {

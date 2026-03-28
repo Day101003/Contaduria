@@ -124,6 +124,40 @@
       </div>
 
       <div class="form-group">
+        <label>Contraseña <span class="required">*</span></label>
+        <div class="password-input-wrapper">
+          <input 
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-control" 
+            [(ngModel)]="user.password"
+            name="password"
+            placeholder="Ingrese la contraseña"
+            [required]="!isEditMode">
+          <button type="button" class="btn-eye" (click)="togglePasswordVisibility()" tabindex="-1" aria-label="Mostrar/Ocultar contraseña">
+            <i *ngIf="!showPassword" class="fa fa-eye"></i>
+            <i *ngIf="showPassword" class="fa fa-eye-slash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Confirmar Contraseña <span class="required">*</span></label>
+        <div class="password-input-wrapper">
+          <input 
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            class="form-control" 
+            [(ngModel)]="user.confirmPassword"
+            name="confirmPassword"
+            placeholder="Repita la contraseña"
+            [required]="!isEditMode">
+          <button type="button" class="btn-eye" (click)="toggleConfirmPasswordVisibility()" tabindex="-1" aria-label="Mostrar/Ocultar contraseña">
+            <i *ngIf="!showConfirmPassword" class="fa fa-eye"></i>
+            <i *ngIf="showConfirmPassword" class="fa fa-eye-slash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
         <label>Rol <span class="required">*</span></label>
         <select 
           class="form-control" 

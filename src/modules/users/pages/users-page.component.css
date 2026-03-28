@@ -287,11 +287,12 @@
   font-weight: 500;
 }
 
-/* Acciones */
 .actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1.5rem;
+  margin-top: 0;
+  position: relative;
+  top: -58px;
 }
 
 .btn-primary {
@@ -304,8 +305,6 @@
   align-items: center;
   gap: .2rem;
   cursor: pointer;
-  position: relative;
-  top: -710px;
 }
 
 .btn-primary:hover {
